@@ -6,7 +6,7 @@ public class DB {
 		Connection conn = null;
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			conn = DriverManager.getConnection("jdbc:mysql://localhost/shopping" , "root" , "hk1994");
+			conn = DriverManager.getConnection("jdbc:mysql://localhost/msgban" , "root" , "hk1994");
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (SQLException e) {

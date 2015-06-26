@@ -26,7 +26,7 @@ public class User  implements java.io.Serializable {
      private Timestamp lateOnline;
      private Integer notices;
      
-     private Set friendId = new HashSet(0);
+     private Set<User> friends = new HashSet<User>(0);
 //     private Set usersForFriendId = new HashSet(0);
      
      private Set statuses = new HashSet(0);
@@ -103,13 +103,6 @@ public class User  implements java.io.Serializable {
 		this.notices = notices;
 	}
 
-	public Set getFriendId() {
-		return friendId;
-	}
-
-	public void setFriendId(Set friendId) {
-		this.friendId = friendId;
-	}
 
 	public Set getStatuses() {
 		return statuses;
@@ -138,7 +131,19 @@ public class User  implements java.io.Serializable {
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
+
+	public Set<User> getFriends() {
+		return friends;
+	}
+
+	public void setFriends(Set<User> friends) {
+		this.friends = friends;
+	}
     
+	@Override
+	public String toString() {
+		return id +  " " + name;
+	}
 
    
 

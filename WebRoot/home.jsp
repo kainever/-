@@ -1,203 +1,255 @@
-<%@ page language="java" import="java.util.*" pageEncoding="GB18030"%>
-
+<%@ page language="java" import="java.util.*" pageEncoding="utf-8"%>
+<%@ page import="com.msg.user.*"%>
+<%
+	request.setCharacterEncoding("utf-8");
+	User user = (User) session.getAttribute("user");
+	if (user == null || user.getName() == null
+			|| user.getName().isEmpty()) {
+		response.sendRedirect("login.jsp");
+	}
+	UserService service = UserService.getInstance();
+	if (user.getId() == null) {
+		user = service.check(user.getName());
+		session.setAttribute("user", user);
+		service.getUserFriends(user);
+	} else {
+		service.getUserFriends(user);
+	}
+	HashSet friends = user.getFriends();
+	Iterator it = friends.iterator();
+	while(it.hasNext()) {
+		User u = (User) it.next();
+		
+	}
+%>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <meta name="description" content="">
-    <meta name="author" content="">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+<meta name="description" content="">
+<meta name="author" content="">
 
-    <title>Fixed Top Navbar Example for Bootstrap</title>
+<title>Fixed Top Navbar Example for Bootstrap</title>
 
-    <!-- Bootstrap core CSS -->
-    <link href="css/bootstrap.min.css" rel="stylesheet">
+<!-- Bootstrap core CSS -->
+<link href="css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Custom styles for this template -->
-    <link href="css/jumbotron-narrow.css" rel="stylesheet">
+<!-- Custom styles for this template -->
+<link href="css/jumbotron-narrow.css" rel="stylesheet">
 
 
 </head>
 
 <body>
 
-<div class="container">
-    <div class="header clearfix">
-        <nav>
-            <ul class="nav nav-pills pull-right">
-                <li role="presentation" class="active"><a href="#">Admin <span class="badge" style="color:red">42</span></a></li>
-                 <li role="menuitem"><a href="logout.jsp">◊¢œ˙</a></li>
-            </ul>
-        </nav>
-        <h3 class="text-muted"><a href="#"> ¡Ù—‘∞Â </a></h3>
-    </div>
+	<div class="container">
+		<div class="header clearfix">
+			<nav>
+				<ul class="nav nav-pills pull-right">
+					<li role="presentation" class="active"><a href="#">Admin <span
+							class="badge" style="color:red">42</span></a></li>
+					<li role="menuitem"><a href="logout.jsp">Ê≥®ÈîÄ</a></li>
+				</ul>
+			</nav>
+			<h3 class="text-muted">
+				<a href="#"> ÁïôË®ÄÊùø </a>
+			</h3>
+		</div>
 
-    <div class="row">
+		<div class="row">
 
-        <div class="col-lg-3" style="border-right: 1px solid #e5e5e5;">
-            <h4>Œ“µƒ∫√”—</h4>
+			<div class="col-lg-3" style="border-right: 1px solid #e5e5e5;">
+				<h4>ÊàëÁöÑÂ•ΩÂèã</h4>
 
-            <div class="span3 bs-docs-sidebar">
-                <ul class="nav nav-list bs-docs-sidenav">
-                    <li><a href="#dropdowns"><i class="icon-chevron-right"></i> œ¬¿≠≤Àµ•</a></li>
-                    <li><a href="#buttonGroups"><i class="icon-chevron-right"></i> ∞¥≈•◊È</a></li>
-                    <li><a href="#buttonDropdowns"><i class="icon-chevron-right"></i> ∞¥≈•œ¬¿≠≤Àµ•</a></li>
-                    <li><a href="#navs"><i class="icon-chevron-right"></i> µº∫Ω</a></li>
-                    <li><a href="#navbar"><i class="icon-chevron-right"></i> µº∫ΩÃı</a></li>
-                    <li><a href="#breadcrumbs"><i class="icon-chevron-right"></i> √Ê∞¸–º</a></li>
-                    <li><a href="#pagination"><i class="icon-chevron-right"></i> ∑÷“≥</a></li>
-                    <li><a href="#labels-badges"><i class="icon-chevron-right"></i> ±Í«©”Îª’’¬</a></li>
-                    <li><a href="#typography"><i class="icon-chevron-right"></i> ≈≈∞Ê</a></li>
-                    <li><a href="#thumbnails"><i class="icon-chevron-right"></i> Àı¬‘Õº</a></li>
-                    <li><a href="#alerts"><i class="icon-chevron-right"></i> æØ∏ÊøÚ</a></li>
-                    <li><a href="#progress"><i class="icon-chevron-right"></i> Ω¯∂»Ãı</a></li>
-                    <li><a href="#media"><i class="icon-chevron-right"></i> √ΩÃÂ∂‘œÛ</a></li>
-                    <li><a href="#misc"><i class="icon-chevron-right"></i> Misc</a></li>
-                </ul>
-            </div>
-        </div>
+				<div class="span3 bs-docs-sidebar">
+					<ul class="nav nav-list bs-docs-sidenav">
+						<%
+							if (user.getFriends().isEmpty()) {
+						%>
+						<h3>‰Ω†ËøòÊ≤°ÊúâÊúãÂèã‰∫Ü....</h3>
+						<%
+							} else {
+								Iterator it = user.getFriends().iterator();
+								while (it.hasNext()) {
+									User u = (User) it.next();
+						%>
+						<li>
+							<div class="row">
+								<div class="col-lg-3">
+									<img class="thumbnail" src="img/<%=u.getImgSrc()%>"
+										style="width: 50px;height: 50px" />
+								</div>
+								<div class="col-lg-8 col-lg-offset-1">
+									<h5>
+										<a href=""><%=u.getName()%></a>
+									</h5>
+									<br>
+								</div>
+							</div>
+						</li>
+						<%
+							}
+							}
+						%>
+					</ul>
+				</div>
+			</div>
 
-        <div class="col-lg-9">
-            <div>
-                <form role="form" action="#">
-                    <div class="form-group">
-                        <textarea class="form-control" rows="3" placeholder="ΩÒÃÏ”ˆµΩ ≤√¥–¬œ  ¬£¨∏œΩÙ¿¥Õ¬≤€œ¬∞…"
-                                 id="newStatus"></textarea>
-                    </div>
-                    <input type="submit" class="btn col-lg-offset-10" id="submitStatus" value="publish"
-                           style="display: none"/>
-                </form>
-            </div>
-            <div class="recentMsg">
-                <div class="row">
-                    <div class="col-lg-2">
-                        <img class="thumbnail" style="width: 80px;height: 80px"/>
-                    </div>
-                    <div class="col-lg-9">
-                        <h5>UserA</h5><br>
+			<div class="col-lg-9">
+				<div>
+					<form role="form" action="#">
+						<div class="form-group">
+							<textarea class="form-control" rows="3"
+								placeholder="‰ªäÂ§©ÈÅáÂà∞‰ªÄ‰πàÊñ∞È≤ú‰∫ãÔºåËµ∂Á¥ßÊù•ÂêêÊßΩ‰∏ãÂêß" id="newStatus"></textarea>
+						</div>
+						<input type="submit" class="btn col-lg-offset-10"
+							id="submitStatus" value="publish" style="display: none" />
+					</form>
+				</div>
+				<div class="recentMsg">
+					<div class="row">
+						<div class="col-lg-2">
+							<img class="thumbnail" style="width: 80px;height: 80px" />
+						</div>
+						<div class="col-lg-9">
+							<h5>UserA</h5>
+							<br>
 
-                        <p>
-                            <time>6:25</time>
-                            <a href="javascript:void(0)" class="col-lg-offset-2 brower"
-                               onclick="openNew()">‰Ø¿¿(1)</a></p>
-                    </div>
-                </div>
-                <div class="content">
-                    <p class="col-lg-offset-0">’‚’Ê «“ª∏ˆ∫√ÃÏ∆¯∞°</p>
-                </div>
+							<p>
+								<time>6:25</time>
+								<a href="javascript:void(0)" class="col-lg-offset-2 brower"
+									onclick="openNew()">ÊµèËßà(1)</a>
+							</p>
+						</div>
+					</div>
+					<div class="content">
+						<p class="col-lg-offset-0">ËøôÁúüÊòØ‰∏Ä‰∏™Â•ΩÂ§©Ê∞îÂïä</p>
+					</div>
 
-                <div class="allComment">
-                    <div style="background-color: azure">
-                        <a href="javascript:void(0)" class="col-lg-offset-1 comment">∆¿¬€(1)</a>
-                        <a href="javascript:void(0)" class="col-lg-offset-2">‘ﬁ(1)</a>
-                        <a href="javascript:void(0)" class="col-lg-offset-2"> ’≤ÿ</a>
-                    </div>
-                    <div class="allComment">
-                        <ul class="list-group">
-                            <li class="list-group-item">
-                                <div class="row">
-                                    <div class="col-lg-2">
-                                        <img class="thumbnail" style="width: 50px;height: 50px"/>
-                                    </div>
-                                    <div class="col-lg-9">
-                                        <h5>Admin : ∂˜  «µƒ£°</h5>
+					<div class="allComment">
+						<div style="background-color: azure">
+							<a href="javascript:void(0)" class="col-lg-offset-1 comment">ËØÑËÆ∫(1)</a>
+							<a href="javascript:void(0)" class="col-lg-offset-2">Ëµû(1)</a> <a
+								href="javascript:void(0)" class="col-lg-offset-2">Êî∂Ëóè</a>
+						</div>
+						<div class="allComment">
+							<ul class="list-group">
+								<li class="list-group-item">
+									<div class="row">
+										<div class="col-lg-2">
+											<img class="thumbnail" style="width: 50px;height: 50px" />
+										</div>
+										<div class="col-lg-9">
+											<h5>Admin : ÊÅ© ÊòØÁöÑÔºÅ</h5>
 
-                                        <p>
-                                            <time>6:25</time>
-                                            <a href="javascript:void(0)" class="col-lg-offset-2 comment">ªÿ∏¥</a></p>
-                                    </div>
-                                </div>
-                                <ul class="list-group">
-                                    <li class="list-group-item">
-                                        <div class="row col-lg-offset-1">
-                                            <div class="col-lg-2">
-                                                <img class="thumbnail" style="width: 50px;height: 50px"/>
-                                            </div>
-                                            <div class="col-lg-9">
-                                                <h5>Admin2ªÿ∏¥Admin : ∂˜  «µƒ£°</h5>
+											<p>
+												<time>6:25</time>
+												<a href="javascript:void(0)" class="col-lg-offset-2 comment">ÂõûÂ§ç</a>
+											</p>
+										</div>
+									</div>
+									<ul class="list-group">
+										<li class="list-group-item">
+											<div class="row col-lg-offset-1">
+												<div class="col-lg-2">
+													<img class="thumbnail" style="width: 50px;height: 50px" />
+												</div>
+												<div class="col-lg-9">
+													<h5>Admin2ÂõûÂ§çAdmin : ÊÅ© ÊòØÁöÑÔºÅ</h5>
 
-                                                <p>
-                                                    <time>6:25</time>
-                                                    <a href="javascript:void(0)" class="col-lg-offset-2 comment">ªÿ∏¥</a></p>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    <li class="list-group-item">
-                                        <div class="row col-lg-offset-1">
-                                            <div class="col-lg-2">
-                                                <img class="thumbnail" style="width: 50px;height: 50px"/>
-                                            </div>
-                                            <div class="col-lg-9">
-                                                <h5>Adminªÿ∏¥Admin2 : ∫√ÃÏ∆¯∞°£°</h5>
+													<p>
+														<time>6:25</time>
+														<a href="javascript:void(0)"
+															class="col-lg-offset-2 comment">ÂõûÂ§ç</a>
+													</p>
+												</div>
+											</div>
+										</li>
+										<li class="list-group-item">
+											<div class="row col-lg-offset-1">
+												<div class="col-lg-2">
+													<img class="thumbnail" style="width: 50px;height: 50px" />
+												</div>
+												<div class="col-lg-9">
+													<h5>AdminÂõûÂ§çAdmin2 : Â•ΩÂ§©Ê∞îÂïäÔºÅ</h5>
 
-                                                <p>
-                                                    <time>6:25</time>
-                                                    <a href="javascript:void(0)" class="col-lg-offset-2 comment">ªÿ∏¥</a></p>
-                                            </div>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li class="list-group-item">
-                                <div class="row">
-                                    <div class="col-lg-2">
-                                        <img class="thumbnail" style="width: 50px;height: 50px"/>
-                                    </div>
-                                    <div class="col-lg-9">
-                                        <h5>Admin3 : µƒ»∑£°</h5>
+													<p>
+														<time>6:25</time>
+														<a href="javascript:void(0)"
+															class="col-lg-offset-2 comment">ÂõûÂ§ç</a>
+													</p>
+												</div>
+											</div>
+										</li>
+									</ul>
+								</li>
+								<li class="list-group-item">
+									<div class="row">
+										<div class="col-lg-2">
+											<img class="thumbnail" style="width: 50px;height: 50px" />
+										</div>
+										<div class="col-lg-9">
+											<h5>Admin3 : ÁöÑÁ°ÆÔºÅ</h5>
 
-                                        <p>
-                                            <time>6:25</time>
-                                            <a href="javascript:void(0)" class="col-lg-offset-2 comment">ªÿ∏¥</a></p>
-                                    </div>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="commentS">
-                    <form role="form" class="form-horizontal">
-                        <div class="row">
-                            <div class="col-lg-10">
-                                <input type="text" class="form-control" id="name"
-                                       placeholder="Œ““≤Àµ“ªæ‰..">
-                            </div>
-                            <div class="col-lg-2 col-xs-pull-1">
-                                <button type="submit" class="btn btn-default form-control">ok</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                <div class="commentFrame" style="display: none">
-                    <form role="form" action="ajax">
-                        <div class="form-group">
-                            <textarea class="form-control text" rows="3"></textarea>
-                        </div>
-                        <input type="submit" class="btn btn-primary col-lg-offset-10 submitComment" value="∑¢±Ì"
-                               />
-                    </form>
-                </div>
+											<p>
+												<time>6:25</time>
+												<a href="javascript:void(0)" class="col-lg-offset-2 comment">ÂõûÂ§ç</a>
+											</p>
+										</div>
+									</div>
+								</li>
+							</ul>
+						</div>
+					</div>
+					<div class="commentS">
+						<form role="form" class="form-horizontal">
+							<div class="row">
+								<div class="col-lg-10">
+									<input type="text" class="form-control" id="name"
+										placeholder="Êàë‰πüËØ¥‰∏ÄÂè•..">
+								</div>
+								<div class="col-lg-2 col-xs-pull-1">
+									<button type="submit" class="btn btn-default form-control">ok</button>
+								</div>
+							</div>
+						</form>
+					</div>
+					<div class="commentFrame" style="display: none">
+						<form role="form" action="ajax">
+							<div class="form-group">
+								<textarea class="form-control text" rows="3"></textarea>
+							</div>
+							<input type="submit"
+								class="btn btn-primary col-lg-offset-10 submitComment"
+								value="ÂèëË°®" />
+						</form>
+					</div>
 
-            </div>
-        </div>
+				</div>
+			</div>
 
-    </div>
+		</div>
 
-    <footer class="footer" style="position: absolute; margin-bottom: 1px; width: 100%;">
-        <h3 style="font-size: medium;">µ±«∞‘⁄œﬂ»À ˝ 100 »À</h3>
-    </footer>
-</div>
-<!-- /container -->
+		<footer class="footer"
+			style="position: absolute; margin-bottom: 1px; width: 100%;">
+			<h3 style="font-size: medium;">ÂΩìÂâçÂú®Á∫ø‰∫∫Êï∞ 100 ‰∫∫</h3>
+		</footer>
+	</div>
+	<!-- /container -->
 
 
-<!-- Bootstrap core JavaScript
+	<!-- Bootstrap core JavaScript
 ================================================== -->
-<!-- Placed at the end of the document so the pages load faster -->
-<script src="js/jquery-1.11.3.js" type="text/javascript"></script>
-<script src="js/bootstrap.min.js" type="text/javascript"></script>
-<script type="application/javascript">
+	<!-- Placed at the end of the document so the pages load faster -->
+	<script src="js/jquery-1.11.3.js" type="text/javascript"></script>
+	<script src="js/bootstrap.min.js" type="text/javascript"></script>
+	<script type="application/javascript">
+		
+		
+		
     function show() {
         $("#submitStatus").css("display", "block");
     };
@@ -223,9 +275,12 @@
         commentS.show();
     }
     $("#newStatus").click(show);
-    //ReferenceError: $ is not defined “≤ «πªø”µ˘µƒ¥ÌŒÛ..
+    //ReferenceError: $ is not defined ‰πüÊòØÂ§üÂùëÁàπÁöÑÈîôËØØ..
     $(".comment").click(comment);
     $(".submitComment").click(ajaxSubmit);
-</script>
+
+	
+	
+	</script>
 </body>
 </html>

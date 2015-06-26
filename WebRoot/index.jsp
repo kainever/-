@@ -33,8 +33,8 @@
 </head>
 <body>
 	<div align="center" style="margin:256px 0">
-		<h2 class="">留言板</h2>
-		<p>记录下这一刻...</p>
+		<h2>留言板</h2>
+		<h2>记录下这一刻...</h2>
 		<button class="btn" id="btn" style="background:none; border:3px solid #000; margin-top:10px" onmouseover="mouseOver()" onmouseout="mouseOut()" onclick="location='login.jsp'"><span id="content" style="font-size:24px">立即使用</span></button>
 	</div>
 </body>

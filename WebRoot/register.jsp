@@ -1,10 +1,43 @@
-<%@ page language="java" import="java.util.*" pageEncoding="GB18030"%>
+<%@ page language="java" import="java.util.*" pageEncoding="utf-8"%>
+<%@ page import="com.msg.user.*" %>
+<%@ page import="java.sql.*" %>
+<%
+	request.setCharacterEncoding("utf-8");
+	String exception = null;
+	String register = request.getParameter("register");
+	if(register != null && register.trim().equals("true")) {
+		UserService service = UserService.getInstance();
+		String username = request.getParameter("name");
+		String password = request.getParameter("password");
+		String email = request.getParameter("email");
+		User u = new User();
+		u.setName(username);
+		u.setPassword(password);
+		u.setEmail(email);
+		u.setLateOnline(new Timestamp(new java.util.Date().getTime()));
+		u.setNotices(0);
+		u.setImgSrc("head.jpg");
+		User cu = service.check(username);
+		if(cu != null) {
+			exception = "用户名已使用..";
+		} else {
+			try {
+				service.save(u);
+				session.setAttribute("user", u);
+				response.sendRedirect("home.jsp");
+			} catch(FieldNullException e) {
+				exception = e.getMessage();
+			}
+		}
+		
+	}
+%>
 
 <!DOCTYPE html>
 <html>
 <head>
     <title>
-        ע��
+        注册
     </title>
     <meta charset="utf-8">
     <meta charset="utf-8">
@@ -21,42 +54,55 @@
 <div class="login-wrapper">
     <h1 class="">Register</h1>
 
-    <form>
-        <div class="form-group">
+    <form action="register.jsp" method="post">
+    	<input type="hidden" name="register" value="true"/>
+    	<%
+    		if(exception != null) {
+    	%>
+    	<p style="color:red"><%=exception %></p>
+    	<%
+    		}
+    	%>
+    	<div class="form-group">
             <div class="input-group">
-                <span class="input-group-addon"><i class="icon-envelope"></i></span><input class="form-control"
+                <span class="input-group-addon"><i class="icon-envelope">昵称</i></span><input name="name" class="form-control"
                                                                                            type="text"
-                                                                                           value="���������������ַ">
+                                                                                           placeholder="用户名">
             </div>
         </div>
         <div class="form-group">
             <div class="input-group">
-                <span class="input-group-addon"><i class="icon-lock"></i></span><input class="form-control"
-                                                                                       type="password" value="����������">
+                <span class="input-group-addon"><i class="icon-envelope">邮箱</i></span><input name="email" class="form-control"
+                                                                                           type="text"
+                                                                                           placeholder="邮箱地址">
             </div>
         </div>
         <div class="form-group">
             <div class="input-group">
-                <span class="input-group-addon"><i class="icon-ok"></i></span><input class="form-control"
-                                                                                     type="password" value="ȷ������">
+                <span class="input-group-addon"><i class="icon-envelope">密码</i></span><input name= "password" class="form-control"
+                                                                                       type="password" placeholder="请输入密码">
             </div>
         </div>
         <div class="form-group">
-            <label class="checkbox text-left"><input type="checkbox"><span>��ͬ�⡶ע�����</span></label>
+            <div class="input-group">
+                <span class="input-group-addon"><i class="icon-ok">确认密码</i></span><input name="password2" class="form-control"
+                                                                                     type="password" placeholder="确认密码">
+            </div>
         </div>
-        <input class="btn btn-lg btn-primary btn-block" type="submit" value="ע��">
+        <div class="form-group">
+            <label class="checkbox text-left col-lg-offset-1"><input type="checkbox"><span>我同意《注册条款》</span></label>
+        </div>
+        <input class="btn btn-lg btn-primary btn-block" type="submit" value="注册">
 
-        <div class="social-login clearfix">
-            <a class="btn btn-primary pull-left weibo" href="login.html"><i class="icon-weibo"></i>΢�� �˻���¼</a><a
-                class="btn btn-primary pull-right renren" href="login.html"><i class="icon-renren"></i>���� �˻���¼</a>
-        </div>
+        <!-- <div class="social-login clearfix">
+            <a class="btn btn-primary pull-left weibo" href="login.html"><i class="icon-weibo"></i>微博 账户登录</a><a
+                class="btn btn-primary pull-right renren" href="login.html"><i class="icon-renren"></i>人人 账户登录</a>
+        </div> -->
         <p>
-            �Ѿ����˻��ˣ�
+            已经有账户了？
         </p>
-        <a class="btn btn-default-outline btn-block" href="login.html">������¼</a>
+        <a class="btn btn-default-outline btn-block" href="login.jsp">立即登录</a>
     </form>
 </div>
-<!-- End Signup Screen -->
-<script type="text/javascript" src="http://tajs.qq.com/stats?sId=9051096" charset="UTF-8"></script>
 </body>
 </html>

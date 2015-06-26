@@ -72,7 +72,8 @@ create table friends
 );
 
 /*==============================================================*/
-/* Table: notification                                          */
+/* Table: notification 通知 一个留言对应这个1或对个通知
+   一个comment也是                                         */
 /*==============================================================*/
 create table notification
 (
