@@ -6,7 +6,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
+import com.msg.status.Status;
 import com.msg.util.DB;
 
 
@@ -36,10 +39,10 @@ public class UserService {
 		return check(username,password,true);
 	}
 	
-//	(id,name,email,password,imgSrc,late_online,notifications)  
+//	(id,name,email,password,imgSrc,late_online)  
 	public void save(User u) {
 		Connection conn = DB.getConn();
-		String sql = "insert into user values(null, ?, ?, ?, ?,default,default)";
+		String sql = "insert into user values(null, ?, ?, ?, ?,default)";
 		PreparedStatement pstmt = DB.prepare(conn, sql);
 		if(u.getName() == null || u.getEmail() == null 
 				|| u.getPassword() == null || u.getImgSrc() == null) {
@@ -98,6 +101,7 @@ public class UserService {
 				u.setPassword(rs.getString("password"));
 				u.setEmail(rs.getString("email"));
 				u.setImgSrc(rs.getString("imgSrc"));
+				u.setLateOnline(rs.getTimestamp("late_online"));
 			}
 			
 		} catch (SQLException e) {
@@ -128,7 +132,6 @@ public class UserService {
 				u.setPassword(rs.getString("password"));
 				u.setImgSrc(rs.getString("imgSrc"));
 				u.setLateOnline(rs.getTimestamp("late_online"));
-				u.setNotices(rs.getInt("notifications"));
 				friends.add(u);
 			}
 		} catch (SQLException e) {
@@ -137,11 +140,46 @@ public class UserService {
 		user.setFriends(friends);
 	}
 	
+	
+	
+	public User getUserById(int id) {
+		User u = null;
+		Connection conn = DB.getConn();
+		String sql = "select * from user where id = " + id + ";";
+		System.out.println(sql);
+		Statement stmt = DB.getStatement(conn);
+		ResultSet rs = DB.getResultSet(stmt, sql);
+		try {
+			if(!rs.next()) {
+				return null;
+			} else {
+				u = new User();
+				u.setId(rs.getInt("id"));
+				u.setName(rs.getString("name"));
+				u.setPassword(rs.getString("password"));
+				u.setEmail(rs.getString("email"));
+				u.setImgSrc(rs.getString("imgSrc"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			DB.close(rs);
+			DB.close(stmt);
+			DB.close(conn);
+		}
+		return u;
+	}
+	
+	
 	public static void main (String[] args) {
 		UserService s = new UserService();
 		User u = new User();
-		u.setId(1);
-		s.getUserFriends(u);
-		System.out.println(u.getFriends());
+//		u.setId(1);
+//		s.getUserFriends(u);
+//		System.out.println(u.getFriends());
+		
+		u = s.getUserById(1);
+		System.out.println(u);
+		
 	}
 }

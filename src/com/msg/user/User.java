@@ -24,7 +24,6 @@ public class User  implements java.io.Serializable {
      private String password;
      private String imgSrc;
      private Timestamp lateOnline;
-     private Integer notices;
      
      private Set<User> friends = new HashSet<User>(0);
 //     private Set usersForFriendId = new HashSet(0);
@@ -93,14 +92,6 @@ public class User  implements java.io.Serializable {
 
 	public void setLateOnline(Timestamp lateOnline) {
 		this.lateOnline = lateOnline;
-	}
-
-	public Integer getNotices() {
-		return notices;
-	}
-
-	public void setNotices(Integer notices) {
-		this.notices = notices;
 	}
 
 

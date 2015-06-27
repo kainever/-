@@ -3,7 +3,7 @@ package com.msg.comment;
 // default package
 
 import java.sql.Timestamp;
-import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Set;
 
 import com.msg.status.Status;
@@ -24,10 +24,23 @@ public class Comment implements java.io.Serializable {
 	private Status status;
 	private String content;
 	private Timestamp commentTime;
-	private Set comments = new HashSet(0);
-	private Set notifications = new HashSet(0);
+	private LinkedList<Comment> comments = new LinkedList<Comment>();
 
+	
+	@Override
+	public String toString() {
+		return id + " comment_id = " +  comment.getId() + " comment_cont = " + content  +  "  son_comment_num = " + comments.size();
+	}
+	
 	// Constructors
+
+	public LinkedList<Comment> getComments() {
+		return comments;
+	}
+
+	public void setComments(LinkedList<Comment> comments) {
+		this.comments = comments;
+	}
 
 	/** default constructor */
 	public Comment() {
@@ -38,17 +51,6 @@ public class Comment implements java.io.Serializable {
 		this.content = content;
 	}
 
-	/** full constructor */
-	public Comment(User user, Comment comment, Status status, String content,
-			Timestamp commentTime, Set comments, Set notifications) {
-		this.user = user;
-		this.comment = comment;
-		this.status = status;
-		this.content = content;
-		this.commentTime = commentTime;
-		this.comments = comments;
-		this.notifications = notifications;
-	}
 
 	// Property accessors
 
@@ -100,20 +102,5 @@ public class Comment implements java.io.Serializable {
 		this.commentTime = commentTime;
 	}
 
-	public Set getComments() {
-		return this.comments;
-	}
-
-	public void setComments(Set comments) {
-		this.comments = comments;
-	}
-
-	public Set getNotifications() {
-		return this.notifications;
-	}
-
-	public void setNotifications(Set notifications) {
-		this.notifications = notifications;
-	}
 
 }

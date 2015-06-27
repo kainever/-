@@ -3,9 +3,10 @@ package com.msg.status;
 // default package
 
 import java.sql.Timestamp;
-import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Set;
 
+import com.msg.comment.Comment;
 import com.msg.user.User;
 
 /**
@@ -25,8 +26,8 @@ public class Status implements java.io.Serializable {
 	private String content;
 	private Integer praises;
 	private Integer friendId;
-	private Set notifications = new HashSet(0);
-	private Set comments = new HashSet(0);
+	private LinkedList<Comment> comments = new LinkedList<Comment> ();
+	private int comment_time;
 
 	// Constructors
 
@@ -49,8 +50,6 @@ public class Status implements java.io.Serializable {
 		this.content = content;
 		this.praises = praises;
 		this.friendId = friendId;
-		this.notifications = notifications;
-		this.comments = comments;
 	}
 
 	// Property accessors
@@ -111,20 +110,22 @@ public class Status implements java.io.Serializable {
 		this.friendId = friendId;
 	}
 
-	public Set getNotifications() {
-		return this.notifications;
+	public LinkedList<Comment> getComments() {
+		return comments;
 	}
 
-	public void setNotifications(Set notifications) {
-		this.notifications = notifications;
-	}
-
-	public Set getComments() {
-		return this.comments;
-	}
-
-	public void setComments(Set comments) {
+	public void setComments(LinkedList<Comment> comments) {
 		this.comments = comments;
 	}
+
+	public int getComment_time() {
+		return comment_time;
+	}
+
+	public void setComment_time(int comment_time) {
+		this.comment_time = comment_time;
+	}
+
+
 
 }

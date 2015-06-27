@@ -2,12 +2,19 @@ package com.data.generator;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Random;
 
+import com.msg.user.User;
+import com.msg.user.UserService;
 import com.msg.util.DB;
 
 
@@ -16,14 +23,18 @@ public class DataGenerator {
 //		saveBatchUser();
 //		Time[] ts = Time.values();
 //		System.out.println(ts[0].ordinal() + "  " + ts[0].name() + " "+ts[0].date);
-		saveBatchStatus();
+//		saveBatchStatus();
+//		generateNotice();
+//		generateComment();
+//		for(int i = 0 ; i < 2 ; i++)
+			generateSonComment();
 	}
 	
 	public  static void saveBatchUser() {
 		int row = 0;
 		Connection conn = DB.getConn();
 		try {
-			String sql = "insert into user values(null,?,?,?,? , default ,default)";
+			String sql = "insert into user values(null,?,?,?,? , default)";
 			PreparedStatement ps = conn.prepareStatement(sql);
 			Random random = new Random();
 			for (int i = 0; i < 20; i++) {
@@ -49,6 +60,7 @@ public class DataGenerator {
 //	   content              varchar(500) not null,
 //	   praises              int,
 //	   friend_id
+//	生成状态
 	public static void saveBatchStatus() {
 		int row = 0;
 		Connection conn = DB.getConn();
@@ -58,9 +70,9 @@ public class DataGenerator {
 			PreparedStatement ps = conn.prepareStatement(sql);
 			Random random = new Random();
 			for (int i = 1; i <= 50; i++) {
-				int userId = random.nextInt(27);
+				int userId = random.nextInt(21);
 				int dt = random.nextInt(8);
-				if(userId < 10 || dt < 1) continue;
+				if(userId < 1 || dt < 1) continue;
 				ps.setInt(1, userId);
 				ps.setTimestamp(2, times[dt].date);
 				ps.setInt(3, random.nextInt(10));
@@ -75,6 +87,142 @@ public class DataGenerator {
 			conn.close();
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+	}
+	
+//	状态与好友挂钩
+	public static void generateNotice() {
+		Connection conn = DB.getConn();
+		String sql = "select * from status";
+		Statement stmt = DB.getStatement(conn);
+		ResultSet rs = null;
+		UserService us = UserService.getInstance();
+		try {
+			rs  = stmt.executeQuery(sql);
+			while(rs.next()) {
+				User u = new User();
+				u.setId(rs.getInt("user_id"));
+				us.getUserFriends(u);
+				Timestamp time = rs.getTimestamp("create_time");
+				int id = rs.getInt("id");
+				HashSet fs = (HashSet) u.getFriends();
+				Iterator it = fs.iterator();
+				while(it.hasNext()) {
+					User tu = (User) it.next();
+					String s = "insert into status_notice values(?,?,default,?)";
+					PreparedStatement pst = DB.prepare(conn, s);
+					pst.setInt(1, tu.getId());
+					pst.setInt(2, id);
+					pst.setTimestamp(3, time);
+					pst.execute();
+					DB.close(pst);
+				}
+				
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+	
+	
+	public static void generateComment() {
+		Connection conn = DB.getConn();
+		String sql = "select * from status";
+		Statement stmt = DB.getStatement(conn);
+		ResultSet rs = null;
+		UserService us = UserService.getInstance();
+		try {
+			CommentTime[] ts = CommentTime.values();
+			Random r = new Random();
+;			rs  = stmt.executeQuery(sql);
+			while(rs.next()) {
+				int id = rs.getInt("id");
+				int items = r.nextInt(5);
+				for(int i = 0 ; i < items; i++) {
+					String s = "insert into comment values(null , ? , ? ,?,?,?)";
+					int uId = r.nextInt(21);
+					int tidx = r.nextInt(8);
+					if(uId < 1) continue;
+					PreparedStatement pst = DB.prepare(conn, s);
+					pst.setInt(1, id);
+					pst.setInt(2, id);
+					pst.setInt(3, uId);
+					pst.setString(4, "是的" + i);
+					pst.setTimestamp(5, ts[tidx].date);
+					pst.execute();
+					DB.close(pst);
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+	public static void generateSonComment() {
+		Connection conn = DB.getConn();
+		String sql = "select * from comment";
+		Statement stmt = DB.getStatement(conn);
+		ResultSet rs = null;
+		UserService us = UserService.getInstance();
+		try {
+			CommentTime[] ts = CommentTime.values();
+			Random r = new Random();
+;			rs  = stmt.executeQuery(sql);
+			while(rs.next()) {
+				int id = rs.getInt("id");
+				Timestamp time = rs.getTimestamp("comment_time");
+				int sid = rs.getInt("status_id");
+				int items = r.nextInt(5);
+				for(int i = 0 ; i < items; i++) {
+					String s = "insert into comment values(null , ? , ? ,?,?,?)";
+					int uId = r.nextInt(21);
+					int tidx = r.nextInt(8);
+					if(ts[tidx].date.compareTo(time) < 0)  continue;
+					if(uId < 1) continue;
+					PreparedStatement pst = DB.prepare(conn, s);
+					pst.setInt(1, sid);
+					pst.setInt(2, id);
+					pst.setInt(3, uId);
+					pst.setString(4, "的确" + i);
+					pst.setTimestamp(5, ts[tidx].date);
+					pst.execute();
+					DB.close(pst);
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+	
+	
+	static enum CommentTime {
+		DATE1("2016-6-27 13:14:10"),
+		DATE2("2016-6-27 12:55:50"),
+		DATE3("2016-6-27 14:34:20"),
+		DATE4("2016-6-27 15:44:50"),
+		DATE5("2016-6-27 16:38:35"),
+		DATE6("2016-5-27 17:18:14"),
+		DATE7("2016-6-27 18:52:22"),
+		DATE9("2016-6-27 09:45:12"),
+		DATE8("2016-6-27 10:52:22");
+		
+		private Timestamp date;
+		
+		CommentTime(String date) {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			Date d = null;
+			try {
+				d = sdf.parse(date);
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+			System.out.println(d);
+			this.date = new Timestamp(d.getTime());
 		}
 	}
 	
