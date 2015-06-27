@@ -57,6 +57,7 @@ create table comment
    user_id              int,
    content              varchar(200) not null,
    comment_time         datetime default CURRENT_TIMESTAMP,
+    p_user_id            int,
    primary key (id)
 );
 

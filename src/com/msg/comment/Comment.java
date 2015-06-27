@@ -20,6 +20,8 @@ public class Comment implements java.io.Serializable {
 	private static final long serialVersionUID = -1702346689441894523L;
 	private Integer id;
 	private User user;
+//	p¸¸½ÚµãµÄcreator
+	private User pUser;
 	private Comment comment;
 	private Status status;
 	private String content;
@@ -29,7 +31,8 @@ public class Comment implements java.io.Serializable {
 	
 	@Override
 	public String toString() {
-		return id + " comment_id = " +  comment.getId() + " comment_cont = " + content  +  "  son_comment_num = " + comments.size();
+//		return id + " comment_id = " +  comment.getId() + " comment_cont = " + content  +  "  son_comment_num = " + comments.size();
+		return "user_id = " + user.getId();
 	}
 	
 	// Constructors
@@ -100,6 +103,14 @@ public class Comment implements java.io.Serializable {
 
 	public void setCommentTime(Timestamp commentTime) {
 		this.commentTime = commentTime;
+	}
+
+	public User getpUser() {
+		return pUser;
+	}
+
+	public void setpUser(User pUser) {
+		this.pUser = pUser;
 	}
 
 

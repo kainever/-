@@ -41,7 +41,7 @@ public class StatusService {
 		st.setId(1);
 		Comment c = new Comment();
 		c.setId(1);
-		LinkedList<Comment> cs = ss.getComments(st, c);
+		LinkedList<Comment> cs = ss.getComments(st, c , true);
 		int count = ss.getCommentTime(cs, 0);
 		System.out.println(count);
 	}
@@ -62,8 +62,8 @@ public class StatusService {
 		Connection conn = DB.getConn();
 		String sql = "select status.id,status.user_id,status.content,status.praises,status.views,status.create_time from status join status_notice on "
 				+ "status.id = status_notice.notice_id where status_notice.user_id="
-				+user.getId()+" and status.create_time > '" + user.getLateOnline() + "' order by status.create_time desc limit " + (page-1)*8 + "8";
-		System.out.println(sql);
+				+user.getId()+" and status.create_time > '" + user.getLateOnline() + "' order by status.create_time desc limit " + (page-1)*8 + ",8";
+//System.out.println(sql);
 		PreparedStatement pst = DB.prepare(conn, sql);
 		ResultSet rs = null;
 		UserService us = UserService.getInstance();
@@ -84,7 +84,7 @@ public class StatusService {
 //				获得他的评论
 				Comment com = new Comment();
 				com.setId(st.getId());
-				LinkedList<Comment> coms = getComments(st,com);
+				LinkedList<Comment> coms = getComments(st,com,true);
 				st.setComments(coms);
 				int count = 0;
 //				评论数
@@ -117,14 +117,14 @@ public class StatusService {
 	}
 
 //	DFS
-	public LinkedList<Comment> getComments(Status st ,Comment comment) {
+	public LinkedList<Comment> getComments(Status st ,Comment comment , boolean first) {
 		int id = 0;
 		id = comment.getId();
 		Connection conn = DB.getConn();
-		String sql = "select comment.id as com_id , comment.status_id , comment.content,comment.comment_time,"
+		String sql = "select comment.id as com_id , comment.p_user_id,comment.status_id , comment.content,comment.comment_time,"
 				+ " user.id , user.name,user.email,user.password,user.imgSrc ,user.late_online "
 				+ "from comment join user on comment.user_id = user.id where comment_id=" + id + " and status_id = " + st.getId() +";";
-//		System.out.println(sql);
+//System.out.println(sql);
 		Statement stmt = DB.getStatement(conn);
 		ResultSet rs = null;
 		LinkedList<Comment> list = new LinkedList<Comment> ();
@@ -144,10 +144,14 @@ public class StatusService {
 				com.setUser(u);
 				com.setContent(rs.getString("content"));
 				com.setStatus(st);
+				if(!first) {
+					User pu = UserService.getInstance().getUserById(rs.getInt("p_user_id"));
+//	System.out.println("pu ====" + pu);
+					com.setpUser(pu);
+				}
 //				递归查找子评论
-				LinkedList<Comment> comments = getComments(st , com);
+				LinkedList<Comment> comments = getComments(st , com , false);
 				com.setComments(comments);
-				com.setComment(comment);
 				list.add(com);
 			}
 		} catch (SQLException e) {
@@ -158,7 +162,7 @@ public class StatusService {
 			DB.close(stmt);
 			DB.close(conn);
 		}
-		System.out.println(list);
+//		System.out.println(list);
 		return list;
 	}
 

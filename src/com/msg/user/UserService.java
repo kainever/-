@@ -40,8 +40,9 @@ public class UserService {
 	}
 	
 //	(id,name,email,password,imgSrc,late_online)  
-	public void save(User u) {
+	public int  save(User u) {
 		Connection conn = DB.getConn();
+		int id = 0;
 		String sql = "insert into user values(null, ?, ?, ?, ?,default)";
 		PreparedStatement pstmt = DB.prepare(conn, sql);
 		if(u.getName() == null || u.getEmail() == null 
@@ -60,12 +61,19 @@ public class UserService {
 			//数据 过长 被截断了....
 //			pstmt.setTimestamp(5, new Timestamp(rdate.getTime()));
 			pstmt.executeUpdate();
+			Statement stmt = DB.getStatement(conn);
+			ResultSet rs = stmt.executeQuery("select last_insert_id()");
+			rs.next();
+			id = rs.getInt(1);
+			DB.close(rs);
+			DB.close(stmt);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
 			DB.close(pstmt);
 			DB.close(conn);
 		}
+		return id;
 
 	}
 	
@@ -178,8 +186,14 @@ public class UserService {
 //		s.getUserFriends(u);
 //		System.out.println(u.getFriends());
 		
-		u = s.getUserById(1);
-		System.out.println(u);
+//		u = s.getUserById(1);
+//		System.out.println(u);
+		u.setEmail("user1@qq.com");
+		u.setImgSrc("head.jpg");
+		u.setName("user1");
+		u.setPassword("user1");
 		
+		int id = s.save(u);
+		System.out.println(id);
 	}
 }

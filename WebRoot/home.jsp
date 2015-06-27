@@ -6,7 +6,7 @@
 	request.setCharacterEncoding("utf-8");
 	User user = (User) session.getAttribute("user");
 	if (user == null || user.getName() == null
-			|| user.getName().isEmpty()) {
+	|| user.getName().isEmpty()) {
 		response.sendRedirect("login.jsp");
 		return ;
 	}
@@ -47,6 +47,11 @@
 <!-- Custom styles for this template -->
 <link href="css/jumbotron-narrow.css" rel="stylesheet">
 
+<style>
+.hkey {
+	display: none;
+}
+</style>
 
 </head>
 
@@ -79,9 +84,9 @@
 						<h3>你还没有朋友了....</h3>
 						<%
 							} else {
-								Iterator it = user.getFriends().iterator();
-								while (it.hasNext()) {
-									User u = (User) it.next();
+												Iterator it = user.getFriends().iterator();
+												while (it.hasNext()) {
+													User u = (User) it.next();
 						%>
 						<li>
 							<div class="row">
@@ -99,7 +104,7 @@
 						</li>
 						<%
 							}
-							}
+											}
 						%>
 					</ul>
 				</div>
@@ -123,14 +128,14 @@
 					<h3>没有新的动态 , 赶紧添加一个把...</h3>
 					<%
 						} else {
-							Iterator it = listSt.iterator();
-							while(it.hasNext()) {
-								Status s = (Status) it.next();
+										Iterator it = listSt.iterator();
+										while(it.hasNext()) {
+											Status s = (Status) it.next();
 					%>
-					<div>
+					<div style="border: 1px solid #e5e5e5">
 						<div class="row">
 							<div class="col-lg-2">
-								<img class="thumbnail" src="img/<%=s.getUser().getImgSrc() %>"
+								<img class="thumbnail" src="img/<%=s.getUser().getImgSrc()%>"
 									style="width: 80px;height: 80px" />
 							</div>
 							<div class="col-lg-9">
@@ -138,124 +143,138 @@
 								<br>
 
 								<p>
-									<time>6:25</time>
+									<time><%=s.getCreateTime()%></time>
 									<a href="javascript:void(0)" class="col-lg-offset-2 brower"
-										onclick="openNew()">浏览(<%=s.getViews() %>)
+										onclick="openNew()">浏览(<%=s.getViews()%>)
 									</a>
 								</p>
 							</div>
 						</div>
 						<div class="content">
-							<p class="col-lg-offset-0"><%=s.getContent() %></p>
+							<p class="col-lg-offset-0"><%=s.getContent()%></p>
 						</div>
 
 						<div style="background-color: azure" class="allComment">
 							<a href="javascript:void(0)" class="col-lg-offset-1 comment">评论(<%=s.getComment_time()%>)
-							</a> <a href="javascript:void(0)" class="col-lg-offset-2">赞(<%=s.getPraises() %>)
+							</a> <a href="javascript:void(0)" class="col-lg-offset-2">赞(<%=s.getPraises()%>)
 							</a> <a href="javascript:void(0)" class="col-lg-offset-2">收藏</a>
 						</div>
 						<%
-								if( !s.getComments().isEmpty()) {
-									Iterator<Comment> itc = s.getComments().iterator();
-										
-							%>
+							
+						%>
 						<div class="allComment">
-							<ul class="list-group">
+							<ul class="list-group biglist">
 								<%
-									while(itc.hasNext()) {
-										Comment com = itc.next();
-										User comUser = com.getUser();
-										LinkedList<Comment> coms = com.getComments();
+									if( !s.getComments().isEmpty()) {
+															Iterator<Comment> itc = s.getComments().iterator();
+															while(itc.hasNext()) {
+																Comment com = itc.next();
+																User comUser = com.getUser();
+																LinkedList<Comment> coms = com.getComments();
 								%>
-								<li class="list-group-item">
+								<li class="list-group-item" id="<%=com.getId()%>">
 									<div class="row">
 										<div class="col-lg-2">
-											<img class="thumbnail" src="img/<%=user.getImgSrc() %>"
+											<img class="thumbnail" src="img/<%=comUser.getImgSrc()%>"
 												style="width: 50px;height: 50px" />
 										</div>
 										<div class="col-lg-9">
-											<h5><%=user.getName() %>
-												:
-												<%=com.getContent() %></h5>
-
+											<h5><%=comUser.getName()%>:<%=com.getContent()%></h5>
+											<p class="hkey"><%=com.getId()%></p>
+											<p class="hkey"><%=com.getUser().getId()%></p>
 											<p>
-												<time><%=com.getCommentTime() %></time>
-												<a href="javascript:void(0)" class="col-lg-offset-2 comment">回复</a>
+												<time><%=com.getCommentTime()%></time>
+												<a href="javascript:void(0)"
+													class="col-lg-offset-2 comment reply">回复</a>
 											</p>
 										</div>
-									</div> <%
-											if( !coms.isEmpty()) {
-												Iterator<Comment> ite = coms.iterator();
-													
-										%>
+									</div>
 									<ul class="list-group">
 										<%
-												while(ite.hasNext()) {
-													Comment sc = ite.next();
-													User su = sc.getUser();
-											%>
-										<li class="list-group-item">
+											if( !coms.isEmpty()) {
+												Iterator<Comment> ite = coms.iterator();
+										%>
+										<%
+											while(ite.hasNext()) {
+												Comment sc = ite.next();
+												User su = sc.getUser();
+										%>
+										<li class="list-group-item" id="<%=sc.getId()%>">
 											<div class="row col-lg-offset-1">
 												<div class="col-lg-2">
-													<img class="thumbnail" src="img\<%=su.getImgSrc() %>"
+													<img class="thumbnail" src="img\<%=su.getImgSrc()%>"
 														style="width: 50px;height: 50px" />
 												</div>
 												<div class="col-lg-9">
-													<h5><%=su.getName() %>评论 : <%=sc.getContent() %>
+													<h5><%=su.getName()%>评论
+														<%=sc.getpUser().getName()%>:
+														<%=sc.getContent()%>
 													</h5>
 
+													<p class="hkey"><%=sc.getId()%></p>
+													<p class="hkey"><%=sc.getUser().getId()%></p>
+
 													<p>
-														<time><%=sc.getCommentTime() %></time>
+														<time><%=sc.getCommentTime()%></time>
 														<a href="javascript:void(0)"
-															class="col-lg-offset-2 comment">回复</a>
+															class="col-lg-offset-2 comment reply">回复</a>
 													</p>
 												</div>
 											</div>
 										</li>
 										<%
-												}
-										%>
-									</ul> <%
 											}
 										%>
+										<%
+											}
+										%>
+									</ul>
 								</li>
 								<%
 									}
+												
+														}
 								%>
+
 							</ul>
 						</div>
-						<%
-								}
-						%>
-						<div class="commentS">
-							<form role="form" class="form-horizontal">
-								<div class="row">
-									<div class="col-lg-10">
-										<input type="text" class="form-control" id="name"
-											placeholder="我也说一句..">
+						<div class="comment_action">
+							<div class="commentS">
+								<form role="form" class="form-horizontal">
+									<div class="row">
+										<div class="col-lg-10">
+											<input type="text" class="form-control" id="name"
+												placeholder="我也说一句..">
+										</div>
+										<div class="col-lg-2 col-xs-pull-1">
+											<button type="submit" class="btn btn-default form-control">ok</button>
+										</div>
 									</div>
-									<div class="col-lg-2 col-xs-pull-1">
-										<button type="submit" class="btn btn-default form-control">ok</button>
+								</form>
+							</div>
+							<div class="commentFrame" style="display: none">
+								<form role="form" action="ajax" class="form">
+									<!-- 隐藏表单元素 -->
+									<input type="hidden" name="comment_id" id="commentId" /> <input
+										type="hidden" name="p_user_id" id="pUserId" /> <input
+										type="hidden" name="status_id" value="<%=s.getId()%>" /> <input
+										type="hidden" name="user_id" value="<%=user.getId()%>" />
+									<div class="form-group">
+										<textarea class="form-control text" rows="3" name="comment"></textarea>
 									</div>
-								</div>
-							</form>
-						</div>
-						<div class="commentFrame" style="display: none">
-							<form role="form" action="ajax">
-								<div class="form-group">
-									<textarea class="form-control text" rows="3"></textarea>
-								</div>
-								<input type="submit"
-									class="btn btn-primary col-lg-offset-10 submitComment"
-									value="发表" />
-							</form>
+									<input type="submit"
+										class="btn btn-primary col-lg-offset-10 submitComment"
+										value="发表" />
+								</form>
+							</div>
 						</div>
 
 					</div>
-					<br><hr>
+					<br>
+					<hr>
 					<%
-							}
 						}
+									}
 					%>
 				</div>
 			</div>
@@ -278,42 +297,87 @@
 	<script type="application/javascript">
 		
 		
-		
-		
-		
+	/* $(document).ready(function() {
+		$(".hkey").hide();
+	}); */
 		
     function show() {
         $("#submitStatus").css("display", "block");
     };
+    
     function comment(event) {
-        var commentS = $(event.target).parents(".allComment").siblings(".commentS");
-        var commentFrame = commentS.next();
-        commentS.hide();
-        commentFrame.show();
-        var textarea = commentFrame.find(".text");
-        textarea.focus();
+    	 var commentAction = $(event.target).parents(".allComment").siblings(".comment_action");
+    	 var commentS = commentAction.find(".commentS");
+    	 var commentFrame = commentS.next();
+         commentS.hide();
+         commentFrame.show();
+         var textarea = commentFrame.find(".text");
+         textarea.focus();
+    	var reply = $(event.target).hasClass("reply");
+    	// 填入值 用于表单提交
+    	if(reply) {
+    		var hkeyCommentId = $(event.target).parent().siblings(".hkey");
+    		var hkeyPUserId = hkeyCommentId.next();
+    		var commentId = commentFrame.find("#commentId");
+    		var pUserId = commentFrame.find("#pUserId");
+    		commentId.val(hkeyCommentId.html());
+    		pUserId.val(hkeyPUserId.html());
+    	} 
+    	
     };
+    
     function openNew() {
         window.open("http://www.w3school.com.cn", "_blank", "channelmode=yes,titlebar=no,toolbar=no, location=no," +
                 " directories=no, status=no, menubar=no, scrollbars=yes, " +
                 "resizable=no, copyhistory=no, width=400, height=400");
     };
 
-    function ajaxSubmit() {
-        var target = event.target;
-        var commentFrame =  target.parents(".commentFrame");
-        commentFrame.hide();
-        var commentS = commentFrame.siblings(".commentS");
-        commentS.show();
+    function ajaxSubmit(event) {
+    	var target = $(event.target);
+        var form = target.parent();
+        var commentId = target.siblings("input[name='comment_id']");
+        var comIdVal = commentId.val();
+        /* if(comIdVal == "")
+        	alert("yes"); */
+        //ajax提交
+        var formVals = form.serialize();
+        $.ajax({    
+	        type:'post',        
+	        url:'comment_publish.jsp',    
+	        data:formVals,    
+	        cache:false,    
+	        dataType:'html',    
+	        success:function(data){ 
+	        	var commentFrame =  target.parents(".commentFrame");
+                commentFrame.hide();
+                var commentS = commentFrame.siblings(".commentS");
+                commentS.show();
+                var commentAction = target.parents(".comment_action");
+                // 向上查找元素的插入位置
+                var comContainer = commentAction.siblings(".allComment").find("ul").eq(0);
+                // 子评论 否则为直接评论 
+                if(comIdVal != "") {
+                	var tmp = comContainer.find("#" + comIdVal);
+                	if(tmp.parent().hasClass("biglist")) {
+                		tmp.find("ul").append(data);
+                	} else {
+                		var sonComContainer = tmp.parent();
+                		sonComContainer.append(data);
+                	}
+                } else {
+                	comContainer.append(data);
+                }
+	        }    
+	    });
+        return false;
     }
+    
+    
     $("#newStatus").click(show);
     //ReferenceError: $ is not defined 也是够坑爹的错误..
     $(".comment").click(comment);
-    $(".submitComment").click(ajaxSubmit);
+   $(".submitComment").click(ajaxSubmit);
 
-	
-	
-	
 	
 	
 	</script>

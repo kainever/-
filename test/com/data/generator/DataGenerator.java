@@ -26,8 +26,7 @@ public class DataGenerator {
 //		saveBatchStatus();
 //		generateNotice();
 //		generateComment();
-//		for(int i = 0 ; i < 2 ; i++)
-			generateSonComment();
+		generateSonComment();
 	}
 	
 	public  static void saveBatchUser() {
@@ -139,9 +138,10 @@ public class DataGenerator {
 ;			rs  = stmt.executeQuery(sql);
 			while(rs.next()) {
 				int id = rs.getInt("id");
+				int userId = rs.getInt("user_id");
 				int items = r.nextInt(5);
 				for(int i = 0 ; i < items; i++) {
-					String s = "insert into comment values(null , ? , ? ,?,?,?)";
+					String s = "insert into comment values(null , ? , ? ,?,?,?,?)";
 					int uId = r.nextInt(21);
 					int tidx = r.nextInt(8);
 					if(uId < 1) continue;
@@ -151,6 +151,7 @@ public class DataGenerator {
 					pst.setInt(3, uId);
 					pst.setString(4, "是的" + i);
 					pst.setTimestamp(5, ts[tidx].date);
+					pst.setInt(6, userId);
 					pst.execute();
 					DB.close(pst);
 				}
@@ -173,11 +174,12 @@ public class DataGenerator {
 ;			rs  = stmt.executeQuery(sql);
 			while(rs.next()) {
 				int id = rs.getInt("id");
+				int cuId = rs.getInt("user_id");
 				Timestamp time = rs.getTimestamp("comment_time");
 				int sid = rs.getInt("status_id");
 				int items = r.nextInt(5);
 				for(int i = 0 ; i < items; i++) {
-					String s = "insert into comment values(null , ? , ? ,?,?,?)";
+					String s = "insert into comment values(null , ? , ? ,?,?,?,?)";
 					int uId = r.nextInt(21);
 					int tidx = r.nextInt(8);
 					if(ts[tidx].date.compareTo(time) < 0)  continue;
@@ -188,6 +190,7 @@ public class DataGenerator {
 					pst.setInt(3, uId);
 					pst.setString(4, "的确" + i);
 					pst.setTimestamp(5, ts[tidx].date);
+					pst.setInt(6, cuId);
 					pst.execute();
 					DB.close(pst);
 				}
