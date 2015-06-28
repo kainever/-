@@ -26,6 +26,7 @@ public class User  implements java.io.Serializable {
      private Timestamp lateOnline;
      private boolean isOnline;
      private Timestamp logoutTime;
+     private int onlines;
      
      private Set<User> friends = new HashSet<User>(0);
 //     private Set usersForFriendId = new HashSet(0);

@@ -31,14 +31,14 @@ public class NoticeService {
 		return service;
 	}
 	
-	public static void insert(User u , Status s) {
+	public static void insert(User u , Status s , boolean isMsg) {
 		Connection conn = DB.getConn();
 		String sql = "insert into status_notice values(?,?,?,?)";
 		PreparedStatement pst = DB.prepare(conn, sql);
 		try {
 			pst.setInt(1, u.getId());
 			pst.setInt(2, s.getId());
-			pst.setBoolean(3, false);
+			pst.setBoolean(3, isMsg);
 			pst.setTimestamp(4, s.getCreateTime());
 			pst.execute();
 		} catch (SQLException e) {

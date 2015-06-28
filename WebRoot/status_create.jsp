@@ -17,7 +17,7 @@
 	StatusService ss = StatusService.getInstance();
 	int id = ss.insert(s);
 	s.setId(id);
-	ss.registerNoticeToFriends(u.getFriends() , s);
+	ss.registerNoticeToFriends(u.getFriends() , s , false);
 	
 	
 	String resp = "<div style='border: 1px solid #e5e5e5'>	"

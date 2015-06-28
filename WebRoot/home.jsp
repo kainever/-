@@ -123,7 +123,7 @@
 								</div>
 								<div class="col-lg-8 col-lg-offset-1">
 									<h5>
-										<a href=""><%=u.getName()%></a>
+										<a href="takeMsg.jsp?id=<%=u.getId()%>"><%=u.getName()%></a>
 									</h5>
 									<br>
 								</div>

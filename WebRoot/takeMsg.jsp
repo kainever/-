@@ -1,9 +1,59 @@
-<%@ page language="java" import="java.util.*" pageEncoding="GB18030"%>
+<%@ page language="java" import="java.util.*" pageEncoding="utf-8"%>
+<%@ page import="com.msg.user.*"%>
+<%@ page import="com.msg.status.*"%>
+<%@ page import="com.msg.notification.*"%>
+<%@ page import="java.sql.*"%>
+
 <%
-	String path = request.getContextPath();
-	String basePath = request.getScheme() + "://"
-			+ request.getServerName() + ":" + request.getServerPort()
-			+ path + "/";
+	request.setCharacterEncoding("utf-8");
+	User user = (User) session.getAttribute("user");
+	if(user == null) {
+		response.sendRedirect("login.jsp");
+		return ;
+	}
+	String ids = request.getParameter("id");
+	String takeMsg = request.getParameter("takeMsg");
+	int id = 0;
+	if(ids != null) {
+		id = Integer.parseInt(ids);
+	}
+	UserService service = UserService.getInstance();
+	int online = service.countOnlineNum();
+	User destUser = null;
+	// æäº¤ç•™è¨€
+	if(takeMsg != null && takeMsg.equals("true")) {
+		String destIds = request.getParameter("destId");
+		id = Integer.parseInt(destIds);
+		Status st = new Status();
+		st.setUser(user);
+		st.setContent(request.getParameter("msg"));
+		st.setCreateTime(new Timestamp(new java.util.Date().getTime()));
+		st.setFriendId(id);
+		st.setPraises(0);
+		st.setViews(0);
+		StatusService ss = StatusService.getInstance();
+		//æ’å…¥
+		int sid = ss.insert(st);
+		st.setId(sid);
+		//æ³¨å†Œ
+		NoticeService ns = NoticeService.getInstance();
+		Set<User> fs = new HashSet<User>();
+		User du = new User();
+		du.setId(id);
+		fs.add(du);
+		ss.registerNoticeToFriends(fs, st , true);
+		request.getRequestDispatcher("takeMsg_success.jsp").forward(request, response);
+	} else if(ids != null ) {
+		Set<User> us = user.getFriends();
+		Iterator itu = us.iterator();
+		while(itu.hasNext()) {
+	User u = (User)itu.next();
+	if(u.getId() == id) {
+		destUser = u;
+		break;
+	}
+		}
+	}
 %>
 
 <!DOCTYPE html>
@@ -15,8 +65,18 @@
 <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 <meta name="description" content="">
 <meta name="author" content="">
-
-<title>Fixed Top Navbar Example for Bootstrap</title>
+<%
+	if(destUser != null) {
+%>
+<title>ç»™<%=destUser.getName()%>ç•™è¨€
+</title>
+<%
+	} else {
+%>
+<title>ç•™è¨€æ¡†</title>
+<%
+	}
+%>
 
 <!-- Bootstrap core CSS -->
 <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -34,58 +94,74 @@
 		<div class="header clearfix">
 			<nav>
 				<ul class="nav nav-pills pull-right">
-					<li role="presentation" class="active"><a href="#">Admin <span
+					<li role="presentation" class="active"><a href="home.jsp"><%=user.getName()%><span
 							class="badge" style="color:red">42</span></a></li>
-					<li role="menuitem"><a href="logout.jsp">×¢Ïú</a></li>
+					<li role="menuitem"><a href="logout.jsp">æ³¨é”€</a></li>
 				</ul>
 			</nav>
 			<h3 class="text-muted">
-				<a href="#"> ÁôÑÔ°å </a>
+				<a href="home.jsp"> ç•™è¨€æ¿ </a>
 			</h3>
 		</div>
 
 		<div class="row">
 
 			<div class="col-lg-3" style="border-right: 1px solid #e5e5e5;">
-				<h4>ÎÒµÄºÃÓÑ</h4>
+				<h4>æˆ‘çš„å¥½å‹</h4>
+
 				<div class="span3 bs-docs-sidebar">
 					<ul class="nav nav-list bs-docs-sidenav">
-						<li><a href="#dropdowns"><i class="icon-chevron-right"></i>
-								ÏÂÀ­²Ëµ¥</a></li>
-						<li><a href="#buttonGroups"><i class="icon-chevron-right"></i>
-								°´Å¥×é</a></li>
-						<li><a href="#buttonDropdowns"><i
-								class="icon-chevron-right"></i> °´Å¥ÏÂÀ­²Ëµ¥</a></li>
-						<li><a href="#navs"><i class="icon-chevron-right"></i> µ¼º½</a></li>
-						<li><a href="#navbar"><i class="icon-chevron-right"></i>
-								µ¼º½Ìõ</a></li>
-						<li><a href="#breadcrumbs"><i class="icon-chevron-right"></i>
-								Ãæ°üĞ¼</a></li>
-						<li><a href="#pagination"><i class="icon-chevron-right"></i>
-								·ÖÒ³</a></li>
-						<li><a href="#labels-badges"><i
-								class="icon-chevron-right"></i> ±êÇ©Óë»ÕÕÂ</a></li>
-						<li><a href="#typography"><i class="icon-chevron-right"></i>
-								ÅÅ°æ</a></li>
-						<li><a href="#thumbnails"><i class="icon-chevron-right"></i>
-								ËõÂÔÍ¼</a></li>
-						<li><a href="#alerts"><i class="icon-chevron-right"></i>
-								¾¯¸æ¿ò</a></li>
-						<li><a href="#progress"><i class="icon-chevron-right"></i>
-								½ø¶ÈÌõ</a></li>
-						<li><a href="#media"><i class="icon-chevron-right"></i>
-								Ã½Ìå¶ÔÏó</a></li>
-						<li><a href="#misc"><i class="icon-chevron-right"></i>
-								Misc</a></li>
+						<%
+							if (user.getFriends().isEmpty()) {
+						%>
+						<h3>ä½ è¿˜æ²¡æœ‰æœ‹å‹äº†....</h3>
+						<%
+							} else {
+																Iterator it = user.getFriends().iterator();
+																while (it.hasNext()) {
+																	User u = (User) it.next();
+						%>
+						<li>
+							<div class="row">
+								<div class="col-lg-3">
+									<img class="thumbnail" src="img/<%=u.getImgSrc()%>"
+										style="width: 50px;height: 50px" />
+								</div>
+								<div class="col-lg-8 col-lg-offset-1">
+									<h5>
+										<a href="takeMsg.jsp?<%=u.getId()%>"><%=u.getName()%></a>
+									</h5>
+									<br>
+								</div>
+							</div>
+						</li>
+						<%
+							}
+															}
+						%>
 					</ul>
 				</div>
 			</div>
 
 			<div class="col-lg-9">
-				<form role="form" method="post" action="#">
-					<label for="msg"><h5>¸øAdminµÄÁôÑÔ£º</h5></label>
+				<form role="form" method="post" action="takeMsg.jsp">
+					<label for="msg"><h5>
+							<%
+								if(destUser != null) {
+							%>
+							ç»™<%=destUser.getName()%>ç•™è¨€
+							<%
+								} else {
+							%>
+							ç»™å¥½å‹ç•™è¨€å§...
+							<%
+								}
+							%>
+							</h5>
+						</label> <input type="hidden" name="destId" value="<%=id%>"> <input
+						type="hidden" name="takeMsg" value="true">
 					<textarea class="ckeditor" name="msg"></textarea>
-					<button type="submit" class="btn btn-primary pull-right">Ìá½»</button>
+					<button type="submit" class="btn btn-primary pull-right">æäº¤</button>
 				</form>
 
 			</div>
@@ -95,7 +171,9 @@
 
 		<footer class="footer"
 			style="position: absolute; margin-bottom: 1px; width: 100%;">
-			<h3 style="font-size: medium;">µ±Ç°ÔÚÏßÈËÊı 100 ÈË</h3>
+			<h3 style="font-size: medium;">
+				å½“å‰åœ¨çº¿äººæ•° <font><%=online%></font>äºº
+			</h3>
 		</footer>
 	</div>
 	<!-- /container -->
@@ -110,6 +188,7 @@
 	<script src="js/sample.js" type="text/javascript"></script>
 
 	<script type="application/javascript">
+		
 		
 		
     function show() {
@@ -140,10 +219,11 @@
         commentS.show();
     }
     $("#newStatus").click(show);
-    //ReferenceError: $ is not defined Ò²ÊÇ¹»¿ÓµùµÄ´íÎó..
+    //ReferenceError: $ is not defined ä¹Ÿæ˜¯å¤Ÿå‘çˆ¹çš„é”™è¯¯..
     $(".comment").click(comment);
     $(".submitComment").click(ajaxSubmit);
 
+	
 	
 	</script>
 </body>

@@ -153,11 +153,11 @@ public class StatusService {
 	 * 发布新的状态后，向status_notice中注册
 	 * @param friends
 	 */
-	public void registerNoticeToFriends(Set<User> friends ,Status s) {
+	public void registerNoticeToFriends(Set<User> friends ,Status s , boolean isMsg) {
 		Iterator it = friends.iterator();
 		while(it.hasNext()) {
 			User f = (User) it.next();
-			NoticeService.insert(f , s);
+			NoticeService.insert(f , s , isMsg);
 		}
 	}
 	
