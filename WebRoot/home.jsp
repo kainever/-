@@ -31,7 +31,7 @@
 	String p = request.getParameter("page");
 	//计算状态的数目
 	NoticeService ns = NoticeService.getInstance();
-	int statusCount =  ns.countStatus(user);
+	int statusCount =  ns.countStatus(user , false);
 	//计算有多少页
 	int pageCount = 1;
 	if(statusCount%Constant.PAGE_SIZE == 0) {
@@ -52,6 +52,9 @@
 	//service.updateOnlineTime();
 	//检查当前网站的在线人数
 	int online = service.countOnlineNum();
+	
+	// 计算留言的数目..
+	int msgNum = ns.countStatus(user , true);
 	
 %>
 
@@ -88,13 +91,16 @@
 		<div class="header clearfix">
 			<nav>
 				<ul class="nav nav-pills pull-right">
-					<li role="presentation" class="active"><a href="#">Admin <span
-							class="badge" style="color:red">42</span></a></li>
+					<li role="presentation" class="active"><a href="listMsg.jsp">Admin
+					<% if(msgNum > 0) { %>
+					<span class="badge" style="color:red"><%=msgNum %></span>
+					<%} %>
+					</a></li>
 					<li role="menuitem"><a href="logout.jsp">注销</a></li>
 				</ul>
 			</nav>
 			<h3 class="text-muted">
-				<a href="#"> 留言板 </a>
+				<a href="home.jsp"> 留言板 </a>
 			</h3>
 		</div>
 

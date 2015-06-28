@@ -4,10 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 import com.msg.status.Status;
-import com.msg.status.StatusService;
 import com.msg.user.User;
 import com.msg.util.DB;
 
@@ -55,14 +53,18 @@ public class NoticeService {
 	 * @param user
 	 * @return
 	 */
-	public int countStatus(User user) {
+	public int countStatus(User user , boolean isMsg) {
 		Connection conn = DB.getConn();
-		String sql = "select count(*) from status_notice "
-				+ "where user_id = " + user.getId() +";";
-		Statement stmt = DB.getStatement(conn);
-		ResultSet rs = DB.getResultSet(stmt, sql);
+		String sql = "select count(*) from status_notice where isMsg= ?"
+				+ " and user_id = ?";
+		PreparedStatement pst = DB.prepare(conn, sql);
+		
+		ResultSet rs = null;
 		int count = 0;
 		try {
+			pst.setBoolean(1, isMsg);
+			pst.setInt(2, user.getId());
+			rs  = pst.executeQuery();
 			if(!rs.next()) {
 				System.out.println("统计状态数目出错...");
 			} else {
