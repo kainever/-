@@ -5,11 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
-import com.msg.status.Status;
 import com.msg.util.DB;
 
 
@@ -110,6 +108,7 @@ public class UserService {
 				u.setEmail(rs.getString("email"));
 				u.setImgSrc(rs.getString("imgSrc"));
 				u.setLateOnline(rs.getTimestamp("late_online"));
+				u.setOnline(rs.getBoolean("is_online"));
 			}
 			
 		} catch (SQLException e) {
@@ -123,6 +122,10 @@ public class UserService {
 	}
 	
 	
+	/**
+	 * 查找用户的好友
+	 * @param user
+	 */
 	public void getUserFriends(User user) {
 		Connection conn = DB.getConn();
 		String sql = "select * from friends join user on "
@@ -177,6 +180,79 @@ public class UserService {
 		}
 		return u;
 	}
+	
+	
+	/**
+	 * 更新在线状态及时间 及 离线时间
+	 * @param id
+	 */
+	public void updateOnline(User user , boolean isLogin)  {
+		Connection conn = DB.getConn();
+		String sql = "";
+		Timestamp t = null;
+		if(isLogin) {
+			sql = "update user set is_online = ? , late_online = ? where id= ?";
+			t = user.getLateOnline();
+		} else {
+			sql = "update user set is_online = ? , logout_time = ? where id= ?";
+			t = user.getLogoutTime();
+		}
+		PreparedStatement pst = DB.prepare(conn, sql);
+		try {
+			pst.setBoolean(1, user.isOnline());
+			pst.setTimestamp(2, t);
+			pst.setInt(3, user.getId());
+			pst.execute();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
+	/**
+	 * 统计在线人数
+	 * @param time
+	 * @return
+	 */
+	public int countOnlineNum() {
+		Connection conn = DB.getConn();
+		Statement stmt = DB.getStatement(conn);
+		String sql = "select count(*) from user where is_online = 1";
+		ResultSet rs = DB.getResultSet(stmt, sql);
+		int num = 0;
+		try {
+			if(!rs.next()) {
+				System.out.println("统计在线人数出错");
+			} else {
+				num = rs.getInt(1);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return num;
+	}
+	
+	
+	/**
+	 * friends表中插入
+	 */
+	public void addFriend(User u , User f) {
+		Connection conn = DB.getConn();
+		String sql = "insert into friends values(?,?)";
+		PreparedStatement pst = DB.prepare(conn, sql);
+		try {
+			pst.setInt(1, u.getId());
+			pst.setInt(2, f.getId());
+			pst.execute();
+		} catch (SQLException e) {
+			System.out.println("插入friends失败...");
+			e.printStackTrace();
+		} finally {
+			DB.close(pst);
+			DB.close(conn);
+		}
+	}
+	
 	
 	
 	public static void main (String[] args) {

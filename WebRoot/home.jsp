@@ -3,6 +3,8 @@
 <%@ page import="com.msg.status.*"%>
 <%@ page import="com.msg.comment.*"%>
 <%
+	//当session失效的时候 ，怎么更新数据到数据库中?
+	//session 提供一个接口 .. 开发者实现,session失效后的处理..有吗?		
 	request.setCharacterEncoding("utf-8");
 	User user = (User) session.getAttribute("user");
 	if (user == null || user.getName() == null
@@ -11,7 +13,7 @@
 		return ;
 	}
 	UserService service = UserService.getInstance();
-	
+	//查找好友
 	if (user.getId() == null) {
 		user = service.check(user.getName());
 		session.setAttribute("user", user);
@@ -19,13 +21,23 @@
 	} else {
 		service.getUserFriends(user);
 	}
+	/*同步好友信息到会话中 */
+	session.setAttribute("user", user);
+	
 	String p = request.getParameter("page");
 	int pageNum = 1;
 	if(p != null) {
 		pageNum = Integer.parseInt(p.trim());
 	}
 	StatusService stService = StatusService.getInstance();
+	//查找好友动态
 	List<Status> listSt = stService.getNewStatus(user , pageNum);
+	
+	//更新 用户的刷新时间
+	//service.updateOnlineTime();
+	//检查当前网站的在线人数
+	int online = service.countOnlineNum();
+	
 %>
 
 <!-- 在线还得添加online字段 -->
@@ -111,11 +123,11 @@
 			</div>
 
 			<div class="col-lg-9">
-				<div>
-					<form role="form" action="#">
+				<div class="publish_status">
+					<form role="form" action="status_create.jsp">
 						<div class="form-group">
 							<textarea class="form-control" rows="3"
-								placeholder="今天遇到什么新鲜事，赶紧来吐槽下吧" id="newStatus"></textarea>
+								placeholder="今天遇到什么新鲜事，赶紧来吐槽下吧" id="newStatus" name="content"></textarea>
 						</div>
 						<input type="submit" class="btn col-lg-offset-10"
 							id="submitStatus" value="publish" style="display: none" />
@@ -155,7 +167,7 @@
 						</div>
 
 						<div style="background-color: azure" class="allComment">
-							<a href="javascript:void(0)" class="col-lg-offset-1 comment">评论(<%=s.getComment_time()%>)
+							<a href="javascript:void(0)" class="col-lg-offset-1 comment big_comment">评论(<font><%=s.getComment_time()%></font>)
 							</a> <a href="javascript:void(0)" class="col-lg-offset-2">赞(<%=s.getPraises()%>)
 							</a> <a href="javascript:void(0)" class="col-lg-offset-2">收藏</a>
 						</div>
@@ -283,7 +295,7 @@
 
 		<footer class="footer"
 			style="position: absolute; margin-bottom: 1px; width: 100%;">
-			<h3 style="font-size: medium;">当前在线人数 100 人</h3>
+			<h3 style="font-size: medium;">当前在线人数 <font><%=online %><font>人</h3>
 		</footer>
 	</div>
 	<!-- /container -->
@@ -315,13 +327,18 @@
          textarea.focus();
     	var reply = $(event.target).hasClass("reply");
     	// 填入值 用于表单提交
+    	//bug : 
+    	var commentId = commentFrame.find("#commentId");
+    	var pUserId = commentFrame.find("#pUserId");
     	if(reply) {
     		var hkeyCommentId = $(event.target).parent().siblings(".hkey");
     		var hkeyPUserId = hkeyCommentId.next();
-    		var commentId = commentFrame.find("#commentId");
-    		var pUserId = commentFrame.find("#pUserId");
     		commentId.val(hkeyCommentId.html());
     		pUserId.val(hkeyPUserId.html());
+    	} else {
+    		//记得重置 可能前一次子子评论的值仍在
+    		commentId.val("");
+    		pUserId.val("");
     	} 
     	
     };
@@ -332,6 +349,7 @@
                 "resizable=no, copyhistory=no, width=400, height=400");
     };
 
+   // ajax提交评论 
     function ajaxSubmit(event) {
     	var target = $(event.target);
         var form = target.parent();
@@ -354,22 +372,61 @@
                 commentS.show();
                 var commentAction = target.parents(".comment_action");
                 // 向上查找元素的插入位置
-                var comContainer = commentAction.siblings(".allComment").find("ul").eq(0);
+                var ac = commentAction.siblings(".allComment");
+                var comContainer = ac.find("ul").eq(0);
+                var comAc = ac.find(".big_comment");
+                // 分割返回数据 resp 是一个数组！
+                var resp = data.split("_");
+                var times = resp[0];
+                var comment = resp[1];
+                //重新设置评论数目
+                comAc.children().html(times);
                 // 子评论 否则为直接评论 
                 if(comIdVal != "") {
                 	var tmp = comContainer.find("#" + comIdVal);
+                	//子评论的评论
                 	if(tmp.parent().hasClass("biglist")) {
-                		tmp.find("ul").append(data);
-                	} else {
+                		/* if(ul.length == 0) {
+                			tmp.append("<ul class='list-group'> </ul>")
+                		} */
+                		var ul = tmp.find("ul");
+                		tmp.find("ul").append(comment);
+                	} else {//子子评论的评论
                 		var sonComContainer = tmp.parent();
-                		sonComContainer.append(data);
+                		sonComContainer.append(comment);
                 	}
                 } else {
-                	comContainer.append(data);
+                	comContainer.append(comment);
                 }
 	        }    
 	    });
         return false;
+    }
+    
+   // 提交动态
+    function submitStatus() {
+    	var form = $("#submitStatus").parent();
+    	 var formVals = form.serialize();
+    	 var statusContainer = form.parent().siblings(".recentMsg");
+    	 var divs = statusContainer.children();
+         $.ajax({    
+ 	        type:'post',        
+ 	        url:'status_create.jsp',    
+ 	        data:formVals,    
+ 	        cache:false,    
+ 	        dataType:'html',    
+ 	        success:function(data){ 
+ 	        	window.location.reload();
+ 	        	//$("#submitStatus").hide();
+ 	        	/* if(divs.length <= 0) {
+ 	        		statusContainer.append(data);
+ 	        	} else {
+ 	        		var div = divs.eq(0);
+ 	        		div.before(data);
+ 	        	} */
+ 	        }    
+ 	    });
+         return false;
     }
     
     
@@ -377,6 +434,7 @@
     //ReferenceError: $ is not defined 也是够坑爹的错误..
     $(".comment").click(comment);
    $(".submitComment").click(ajaxSubmit);
+   $("#submitStatus").click(submitStatus);
 
 	
 	

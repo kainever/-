@@ -1,4 +1,4 @@
-insert into user values(1,'admin','admin@qq.com','admin','head.jpg',default);
+insert into user values(1,'admin','admin@qq.com','admin','head.jpg',default,default);
 
 #friends
 insert into friends value(1 , 2);
@@ -62,14 +62,7 @@ insert into friends values(2 , 5 );
 
 insert into friends values(1,1);
 
- id                   int not null auto_increment,
-   status_id            int,
-   comment_id           int,
-   user_id              int,
-   content              varchar(200) not null,
-   comment_time         dateti
 
-insert into comment values(null , 1 , 1 , )
 
 
 

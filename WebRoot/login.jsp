@@ -1,18 +1,25 @@
 <%@ page language="java" import="java.util.*" pageEncoding="utf-8"%>
 <%@ page import="com.msg.user.*" %>
+<%@page import="java.sql.Timestamp"%>
 <%
 	request.setCharacterEncoding("utf-8");
 	String isLogin = request.getParameter("login");
 	String exceptionN = null;
 	String exceptionP = null;
+	UserService service = UserService.getInstance();
+	//统计在线人数
+	int online = service.countOnlineNum();
 	if(isLogin != null) {
-		UserService service = UserService.getInstance();
 		String username = request.getParameter("name");
 		String password = request.getParameter("password");
 
 		try {
 			User u = service.check(username, password);
 			session.setAttribute("user", u);
+			//更新在线时间 及 在线状态
+			u.setOnline(true);
+			u.setLateOnline(new Timestamp(new java.util.Date().getTime()));
+			service.updateOnline(u , true);
 			response.sendRedirect("home.jsp");
 		} catch (UserNotFoundException e) {
 			exceptionN = e.getMessage();
@@ -92,6 +99,11 @@
     </form>
     <a class="btn btn-default-outline btn-block" href="register.jsp">立即注册</a>
 </div>
+	<div class="col-lg-offset-5" style="position: absolute; margin-bottom: 1px;">
+	<footer class="footer"
+		<h3 style="font-size: medium;">当前在线人数 <font><%=online %><font>人</h3>
+	</footer>
+	</div>
 <!-- End Login Screen -->
 <!--<script type="text/javascript" src="http://tajs.qq.com/stats?sId=9051096" charset="UTF-8"></script>-->
 </body>

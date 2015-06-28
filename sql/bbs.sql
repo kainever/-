@@ -29,11 +29,13 @@ create table Status
    content              varchar(500) not null,
    praises              int,
    friend_id            int,
+   comment_times        int default 0,
    primary key (id)
 );
 
 /*==============================================================*/
-/* Table: User                                                  */
+/* Table: User   
+# late_online 上次登录时间                                               */
 /*==============================================================*/
 create table User
 (
@@ -43,6 +45,8 @@ create table User
    password             varchar(20) not null,
    imgSrc               varchar(20),
    late_online          datetime default CURRENT_TIMESTAMP,
+   is_online            boolean default false,
+   logout_time     		datetime default CURRENT_TIMESTAMP,
    primary key (id)
 );
 

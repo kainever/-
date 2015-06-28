@@ -33,14 +33,15 @@ public class DataGenerator {
 		int row = 0;
 		Connection conn = DB.getConn();
 		try {
-			String sql = "insert into user values(null,?,?,?,? , default)";
+			String sql = "insert into user values(null,?,?,?,? , default,?)";
 			PreparedStatement ps = conn.prepareStatement(sql);
 			Random random = new Random();
-			for (int i = 0; i < 20; i++) {
+			for (int i = 1; i <= 20; i++) {
 				ps.setString(1, "admin" + i);
 				ps.setString(2, "admin" + i + "@qq.com");
 				ps.setString(3, "admin" + i);
 				ps.setString(4, "head.jpg");
+				ps.setBoolean(5, random.nextBoolean());
 				ps.addBatch();
 			}
 			int[] rows = ps.executeBatch();
@@ -204,15 +205,15 @@ public class DataGenerator {
 	
 	
 	static enum CommentTime {
-		DATE1("2016-6-27 13:14:10"),
-		DATE2("2016-6-27 12:55:50"),
-		DATE3("2016-6-27 14:34:20"),
-		DATE4("2016-6-27 15:44:50"),
-		DATE5("2016-6-27 16:38:35"),
-		DATE6("2016-5-27 17:18:14"),
-		DATE7("2016-6-27 18:52:22"),
-		DATE9("2016-6-27 09:45:12"),
-		DATE8("2016-6-27 10:52:22");
+		DATE1("2015-6-27 13:14:10"),
+		DATE2("2015-6-27 12:55:50"),
+		DATE3("2015-6-27 14:34:20"),
+		DATE4("2015-6-27 15:44:50"),
+		DATE5("2015-6-27 16:38:35"),
+		DATE6("2015-5-27 17:18:14"),
+		DATE7("2015-6-27 18:52:22"),
+		DATE9("2015-6-27 09:45:12"),
+		DATE8("2015-6-27 10:52:22");
 		
 		private Timestamp date;
 		
@@ -231,15 +232,15 @@ public class DataGenerator {
 	
 	
 	static enum Time {
-		DATE1("2016-6-26 13:14:10"),
-		DATE2("2016-6-26 12:55:50"),
-		DATE3("2016-6-26 14:34:20"),
-		DATE4("2016-6-26 15:44:50"),
-		DATE5("2016-6-26 16:38:35"),
-		DATE6("2016-5-26 17:18:14"),
-		DATE7("2016-6-25 18:52:22"),
-		DATE9("2016-6-24 09:45:12"),
-		DATE8("2016-6-23 10:52:22");
+		DATE1("2015-6-26 13:14:10"),
+		DATE2("2015-6-26 12:55:50"),
+		DATE3("2015-6-26 14:34:20"),
+		DATE4("2015-6-26 15:44:50"),
+		DATE5("2015-6-26 16:38:35"),
+		DATE6("2015-5-26 17:18:14"),
+		DATE7("2015-6-25 18:52:22"),
+		DATE9("2015-6-24 09:45:12"),
+		DATE8("2015-6-23 10:52:22");
 		
 		private Timestamp date;
 		

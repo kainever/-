@@ -24,6 +24,8 @@ public class User  implements java.io.Serializable {
      private String password;
      private String imgSrc;
      private Timestamp lateOnline;
+     private boolean isOnline;
+     private Timestamp logoutTime;
      
      private Set<User> friends = new HashSet<User>(0);
 //     private Set usersForFriendId = new HashSet(0);
@@ -134,6 +136,22 @@ public class User  implements java.io.Serializable {
 	@Override
 	public String toString() {
 		return id +  " " + name;
+	}
+
+	public boolean isOnline() {
+		return isOnline;
+	}
+
+	public void setOnline(boolean isOnline) {
+		this.isOnline = isOnline;
+	}
+
+	public Timestamp getLogoutTime() {
+		return logoutTime;
+	}
+
+	public void setLogoutTime(Timestamp logoutTime) {
+		this.logoutTime = logoutTime;
 	}
 
    

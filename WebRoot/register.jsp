@@ -24,6 +24,8 @@
 			try {
 				service.save(u);
 				session.setAttribute("user", u);
+				// 添加自己为好友..
+				service.addFriend(u , u);
 				response.sendRedirect("home.jsp");
 			} catch(FieldNullException e) {
 				exception = e.getMessage();

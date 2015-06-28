@@ -31,7 +31,15 @@
 
 	CommentService cs = CommentService.getInstance();
 	Timestamp t = new Timestamp(new java.util.Date().getTime());
+	//将评论插入数据库中
 	int id = cs.insert(com);
+	//刷新评论的数目 首先找到status
+	StatusService stService = StatusService.getInstance();
+	Status status = stService.searchById(st.getId());
+	int commentTimes = status.getComment_time();
+	commentTimes++;
+	stService.updateCommentTime(st.getId(), commentTimes);
+	
 	u = (User) session.getAttribute("user");
 	User pUser = null;
 
@@ -55,10 +63,10 @@
 			+ " <p> <time> "
 			+ t
 			+ "</time> <a href='javascript:void(0)' class='col-lg-offset-2 comment reply' onclick='comment(event)'>回复</a>"
-			+ " </p> </div> </div>";
-
+			+ " </p> </div> </div> <ul class='list-group'></ul></li>";
 	if(commentId.isEmpty()) {
-		out.print(s);
+		 String resp = commentTimes + "_" + s;
+		out.print(resp);
 	} else {
 		UserService us = UserService.getInstance();
 		pUser = us.getUserById(Integer.parseInt(pUserId));
@@ -82,8 +90,9 @@
 				+ " <p> <time> "
 				+ t
 				+ "</time> <a href='javascript:void(0)' class='col-lg-offset-2 comment reply' onclick='comment(event)'>回复</a>"
-				+ " </p> </div> </div>";
-		out.print(ss);
+				+ " </p> </div> </div> </li>";
+	    String resp = commentTimes + "_" + ss;
+		out.print(resp);
 	}
 %>
 

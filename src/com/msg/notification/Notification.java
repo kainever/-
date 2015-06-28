@@ -1,6 +1,7 @@
 package com.msg.notification;
 
-import com.msg.comment.Comment;
+import java.sql.Timestamp;
+
 import com.msg.status.Status;
 import com.msg.user.User;
 
@@ -15,10 +16,10 @@ public class Notification implements java.io.Serializable {
 	// Fields
 
 	private static final long serialVersionUID = 1L;
-	private Integer id;
 	private User user;
 	private Status status;
-	private Comment comment;
+	private boolean isMsg;
+	private Timestamp registerTime;
 
 	// Constructors
 
@@ -27,21 +28,13 @@ public class Notification implements java.io.Serializable {
 	}
 
 	/** full constructor */
-	public Notification(User user, Status status, Comment comment) {
+	public Notification(User user, Status status) {
 		this.user = user;
 		this.status = status;
-		this.comment = comment;
 	}
 
 	// Property accessors
 
-	public Integer getId() {
-		return this.id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
-	}
 
 	public User getUser() {
 		return this.user;
@@ -59,12 +52,21 @@ public class Notification implements java.io.Serializable {
 		this.status = status;
 	}
 
-	public Comment getComment() {
-		return this.comment;
+	public Timestamp getRegisterTime() {
+		return registerTime;
 	}
 
-	public void setComment(Comment comment) {
-		this.comment = comment;
+	public void setRegisterTime(Timestamp registerTime) {
+		this.registerTime = registerTime;
 	}
+
+	public boolean isMsg() {
+		return isMsg;
+	}
+
+	public void setMsg(boolean isMsg) {
+		this.isMsg = isMsg;
+	}
+
 
 }
