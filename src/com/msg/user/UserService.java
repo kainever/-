@@ -41,7 +41,7 @@ public class UserService {
 	public int  save(User u) {
 		Connection conn = DB.getConn();
 		int id = 0;
-		String sql = "insert into user values(null, ?, ?, ?, ?,default)";
+		String sql = "insert into user values(null, ?, ?, ?, ?,default,true,null)";
 		PreparedStatement pstmt = DB.prepare(conn, sql);
 		if(u.getName() == null || u.getEmail() == null 
 				|| u.getPassword() == null || u.getImgSrc() == null) {

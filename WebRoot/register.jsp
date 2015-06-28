@@ -15,14 +15,14 @@
 		u.setPassword(password);
 		u.setEmail(email);
 		u.setLateOnline(new Timestamp(new java.util.Date().getTime()));
-		u.setNotices(0);
 		u.setImgSrc("head.jpg");
 		User cu = service.check(username);
 		if(cu != null) {
 			exception = "用户名已使用..";
 		} else {
 			try {
-				service.save(u);
+				int id = service.save(u);
+				u.setId(id);
 				session.setAttribute("user", u);
 				// 添加自己为好友..
 				service.addFriend(u , u);

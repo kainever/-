@@ -2,9 +2,12 @@
 <%@ page import="com.msg.user.*"%>
 <%@ page import="com.msg.status.*"%>
 <%@ page import="com.msg.comment.*"%>
+<%@ page import="com.msg.util.*"%>
+<%@ page import="com.msg.notification.*"%>
 <%
 	//当session失效的时候 ，怎么更新数据到数据库中?
-	//session 提供一个接口 .. 开发者实现,session失效后的处理..有吗?		
+	//session 提供一个接口 .. 开发者实现,session失效后的处理..有吗?
+	//实现sessionListener接口..
 	request.setCharacterEncoding("utf-8");
 	User user = (User) session.getAttribute("user");
 	if (user == null || user.getName() == null
@@ -24,12 +27,24 @@
 	/*同步好友信息到会话中 */
 	session.setAttribute("user", user);
 	
+	StatusService stService = StatusService.getInstance();
 	String p = request.getParameter("page");
+	//计算状态的数目
+	NoticeService ns = NoticeService.getInstance();
+	int statusCount =  ns.countStatus(user);
+	//计算有多少页
+	int pageCount = 1;
+	if(statusCount%Constant.PAGE_SIZE == 0) {
+		pageCount = statusCount/Constant.PAGE_SIZE;
+	} else {
+		pageCount = statusCount/Constant.PAGE_SIZE + 1;
+	}
 	int pageNum = 1;
 	if(p != null) {
 		pageNum = Integer.parseInt(p.trim());
+		if(pageNum < 1) pageNum = 1;
+		if(pageNum > pageCount) pageNum = pageCount;
 	}
-	StatusService stService = StatusService.getInstance();
 	//查找好友动态
 	List<Status> listSt = stService.getNewStatus(user , pageNum);
 	
@@ -288,6 +303,12 @@
 						}
 									}
 					%>
+				</div>
+				<div class="">
+					<ul class="pager">
+	 					 <li class="previous"><a href="home.jsp?page=<%=pageNum-1%>">&larr; 前一页</a></li>
+	  					 <li class="next"><a href="home.jsp?page=<%=pageNum+1%>">下一页 &rarr;</a></li>
+					</ul>
 				</div>
 			</div>
 
