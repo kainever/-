@@ -4,15 +4,21 @@
 <%
 	request.setCharacterEncoding("utf-8");
 	String isLogin = request.getParameter("login");
+	String username = null;
+	String password = null;
+	String autoLogin = null;
 	String exceptionN = null;
 	String exceptionP = null;
 	UserService service = UserService.getInstance();
 	//统计在线人数
 	int online = service.countOnlineNum();
 	if(isLogin != null) {
-		String username = request.getParameter("name");
-		String password = request.getParameter("password");
-
+		username = request.getParameter("name");
+		password = request.getParameter("password");
+	} 
+	
+	// 验证
+	if(username != null || password != null) {
 		try {
 			User u = service.check(username, password);
 			session.setAttribute("user", u);
@@ -27,6 +33,7 @@
 			exceptionP = e.getMessage();
 		}
 	}
+	
 %>
 
 <!DOCTYPE html>
@@ -68,7 +75,7 @@
         	%>
             <div class="input-group">
                 <span class="input-group-addon"><i class="icon-envelope"></i></span><input name="name" class="form-control"
-                                                                                           placeholder="用户名/邮箱(暂只支持用户名)"
+                                                                                           placeholder="用户名"
                                                                                            type="text">
             </div>
         </div>
@@ -86,10 +93,10 @@
             </div>
         </div>
 
-        <div class="pull-left col-lg-offset-1">
+       <!--  <div class="pull-left col-lg-offset-1">
             <label class="checkbox"><input type="checkbox" name="autoLogin"><span>自动登录</span></label>
-        </div>
-         <a class="pull-right" href="#">忘记密码了？</a>
+        </div> -->
+         <!-- <a class="pull-right" href="#">忘记密码了？</a> -->
         <input class="btn btn-lg btn-primary btn-block" type="submit" value="登录">
 
         <!-- <div class="social-login clearfix">

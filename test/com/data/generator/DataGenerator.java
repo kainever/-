@@ -20,20 +20,23 @@ import com.msg.util.DB;
 
 public class DataGenerator {
 	public static void main( String[] args) {
-//		saveBatchUser();
-//		Time[] ts = Time.values();
-//		System.out.println(ts[0].ordinal() + "  " + ts[0].name() + " "+ts[0].date);
+//		1
+		saveBatchUser();
+//		2
 //		saveBatchStatus();
+//		3 这一步前先插入friends
 //		generateNotice();
+		//4
 //		generateComment();
-		generateSonComment();
+		//5
+//		generateSonComment();
 	}
 	
 	public  static void saveBatchUser() {
 		int row = 0;
 		Connection conn = DB.getConn();
 		try {
-			String sql = "insert into user values(null,?,?,?,? , default,?)";
+			String sql = "insert into user values(null,?,?,?,? , default,?,?)";
 			PreparedStatement ps = conn.prepareStatement(sql);
 			Random random = new Random();
 			for (int i = 1; i <= 20; i++) {
@@ -42,6 +45,7 @@ public class DataGenerator {
 				ps.setString(3, "admin" + i);
 				ps.setString(4, "head.jpg");
 				ps.setBoolean(5, random.nextBoolean());
+				ps.setTimestamp(6, new Timestamp(new Date().getTime()));
 				ps.addBatch();
 			}
 			int[] rows = ps.executeBatch();
@@ -53,20 +57,14 @@ public class DataGenerator {
 	}
 	
 	
-//	id                   int not null auto_increment,
-//	   user_id              int,
-//	   create_time          datetime default CURRENT_TIMESTAMP,
-//	   views                int default 0,
-//	   content              varchar(500) not null,
-//	   praises              int,
-//	   friend_id
+
 //	生成状态
 	public static void saveBatchStatus() {
 		int row = 0;
 		Connection conn = DB.getConn();
 		Time[] times = Time.values();
 		try {
-			String sql = "insert into status values(null,?,?,?,? , ? ,null)";
+			String sql = "insert into status values(null,?,?,?,? , ? ,null,?)";
 			PreparedStatement ps = conn.prepareStatement(sql);
 			Random random = new Random();
 			for (int i = 1; i <= 50; i++) {
@@ -79,6 +77,7 @@ public class DataGenerator {
 				
 				ps.setString(4,"今天天氣很好  " + i);
 				ps.setInt(5, random.nextInt(10));
+				ps.setInt(6, 0);
 				
 				ps.addBatch();
 			}

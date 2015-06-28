@@ -20,6 +20,8 @@
 	UserService service = UserService.getInstance();
 	int online = service.countOnlineNum();
 	User destUser = null;
+	NoticeService ns = NoticeService.getInstance();
+	int msgNum = ns.countStatus(user , true);
 	// 提交留言
 	if(takeMsg != null && takeMsg.equals("true")) {
 		String destIds = request.getParameter("destId");
@@ -36,22 +38,21 @@
 		int sid = ss.insert(st);
 		st.setId(sid);
 		//注册
-		NoticeService ns = NoticeService.getInstance();
 		Set<User> fs = new HashSet<User>();
 		User du = new User();
 		du.setId(id);
 		fs.add(du);
 		ss.registerNoticeToFriends(fs, st , true);
-		request.getRequestDispatcher("takeMsg_success.jsp").forward(request, response);
+		/* request.getRequestDispatcher("takeMsg_success.jsp").forward(request, response); */
 	} else if(ids != null ) {
 		Set<User> us = user.getFriends();
 		Iterator itu = us.iterator();
 		while(itu.hasNext()) {
-	User u = (User)itu.next();
-	if(u.getId() == id) {
-		destUser = u;
-		break;
-	}
+			User u = (User)itu.next();
+			if(u.getId() == id) {
+				destUser = u;
+				break;
+			}
 		}
 	}
 %>
@@ -94,8 +95,10 @@
 		<div class="header clearfix">
 			<nav>
 				<ul class="nav nav-pills pull-right">
-					<li role="presentation" class="active"><a href="home.jsp"><%=user.getName()%><span
-							class="badge" style="color:red">42</span></a></li>
+					<li role="presentation" class="active"><a href="listMsg.jsp"><%=user.getName()%>
+					<% if(msgNum > 0) { %>
+					<span class="badge" style="color:red"><%=msgNum %></span>
+					<%} %></a></li>
 					<li role="menuitem"><a href="logout.jsp">注销</a></li>
 				</ul>
 			</nav>
@@ -144,7 +147,7 @@
 			</div>
 
 			<div class="col-lg-9">
-				<form role="form" method="post" action="takeMsg.jsp">
+				<form role="form" method="post" action="javascript:void(0)">
 					<label for="msg"><h5>
 							<%
 								if(destUser != null) {
@@ -161,7 +164,7 @@
 						</label> <input type="hidden" name="destId" value="<%=id%>"> <input
 						type="hidden" name="takeMsg" value="true">
 					<textarea class="ckeditor" name="msg"></textarea>
-					<button type="submit" class="btn btn-primary pull-right">提交</button>
+					<button type="submit" class="btn btn-primary pull-right" id="msgSubmit">提交</button>
 				</form>
 
 			</div>
@@ -190,7 +193,7 @@
 	<script type="application/javascript">
 		
 		
-		
+	/* 	
     function show() {
         $("#submitStatus").css("display", "block");
     }
@@ -209,19 +212,27 @@
                 " directories=no, status=no, menubar=no, scrollbars=yes, " +
                 "resizable=no, copyhistory=no, width=400, height=400");
     }
-    ;
+    ; */
 
     function ajaxSubmit() {
-        var target = event.target;
-        var commentFrame = target.parents(".commentFrame");
-        commentFrame.hide();
-        var commentS = commentFrame.siblings(".commentS");
-        commentS.show();
+    	var form = $("#msgSubmit").parent().serialize();
+    	$.ajax({    
+ 	        type:'post',        
+ 	        url:'takeMsg.jsp',    
+ 			data : form,
+ 	        cache:false,    
+ 	        dataType:'html',    
+ 	        success:function(data){ 
+ 	        	alert("ok");
+ 	            window.location.reload();
+ 	        }    
+ 	    });
+         return false;
     }
-    $("#newStatus").click(show);
+   /*  $("#newStatus").click(show);
     //ReferenceError: $ is not defined 也是够坑爹的错误..
-    $(".comment").click(comment);
-    $(".submitComment").click(ajaxSubmit);
+    $(".comment").click(comment); */
+    $("#msgSubmit").click(ajaxSubmit);
 
 	
 	

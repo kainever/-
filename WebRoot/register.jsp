@@ -91,9 +91,9 @@
                                                                                      type="password" placeholder="确认密码">
             </div>
         </div>
-        <div class="form-group">
+       <!--  <div class="form-group">
             <label class="checkbox text-left col-lg-offset-1"><input type="checkbox"><span>我同意《注册条款》</span></label>
-        </div>
+        </div> -->
         <input class="btn btn-lg btn-primary btn-block" type="submit" value="注册">
 
         <!-- <div class="social-login clearfix">

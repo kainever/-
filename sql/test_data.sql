@@ -1,4 +1,4 @@
-insert into user values(1,'admin','admin@qq.com','admin','head.jpg',default,default);
+insert into user values(1,'admin','admin@qq.com','admin','head.jpg',default,default,null);
 
 #friends
 insert into friends value(1 , 2);

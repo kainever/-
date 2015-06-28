@@ -29,7 +29,7 @@ create table Status
    content              varchar(500) not null,
    praises              int,
    friend_id            int,
-   comment_times        int default 0,
+   comment_time        int default 0,
    primary key (id)
 );
 

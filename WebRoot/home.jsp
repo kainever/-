@@ -274,13 +274,18 @@
 						<div class="comment_action">
 							<div class="commentS">
 								<form role="form" class="form-horizontal">
+								<input type="hidden" name="comment_id" id="commentId" /> <input
+										type="hidden" name="p_user_id" id="pUserId" /> 
+								<input
+										type="hidden" name="status_id" value="<%=s.getId()%>" /> <input
+										type="hidden" name="user_id" value="<%=user.getId()%>" />
 									<div class="row">
 										<div class="col-lg-10">
 											<input type="text" class="form-control" id="name"
-												placeholder="我也说一句..">
+												placeholder="我也说一句.." name="comment">
 										</div>
 										<div class="col-lg-2 col-xs-pull-1">
-											<button type="submit" class="btn btn-default form-control">ok</button>
+											<button type="submit" class="btn btn-default form-control submitComment2">ok</button>
 										</div>
 									</div>
 								</form>
@@ -371,7 +376,7 @@
     };
     
     function openNew() {
-        window.open("http://www.w3school.com.cn", "_blank", "channelmode=yes,titlebar=no,toolbar=no, location=no," +
+        window.open("viewer.jsp", "_blank", "channelmode=yes,titlebar=no,toolbar=no, location=no," +
                 " directories=no, status=no, menubar=no, scrollbars=yes, " +
                 "resizable=no, copyhistory=no, width=400, height=400");
     };
@@ -386,6 +391,7 @@
         	alert("yes"); */
         //ajax提交
         var formVals = form.serialize();
+        var text = target.siblings().find("[name='comment']");
         $.ajax({    
 	        type:'post',        
 	        url:'comment_publish.jsp',    
@@ -393,6 +399,7 @@
 	        cache:false,    
 	        dataType:'html',    
 	        success:function(data){ 
+	        	text.val("");
 	        	var commentFrame =  target.parents(".commentFrame");
                 commentFrame.hide();
                 var commentS = commentFrame.siblings(".commentS");
@@ -429,6 +436,39 @@
 	    });
         return false;
     }
+   
+   
+    function ajaxSubmit2(event) {
+    	var target = $(event.target);
+        var form = target.parent().parent().parent();
+        var formVals = form.serialize();
+        var input = target.parents(".row").find("[name='comment']");
+        $.ajax({    
+	        type:'post',        
+	        url:'comment_publish.jsp',    
+	        data:formVals,    
+	        cache:false,    
+	        dataType:'html',    
+	        success:function(data){ 
+	        	input.val("");
+                var commentAction = target.parents(".comment_action");
+                // 向上查找元素的插入位置
+                var ac = commentAction.siblings(".allComment");
+                var comContainer = ac.find("ul").eq(0);
+                var comAc = ac.find(".big_comment");
+                // 分割返回数据 resp 是一个数组！
+                var resp = data.split("_");
+                var times = resp[0];
+                var comment = resp[1];
+                //重新设置评论数目
+                comAc.children().html(times);
+                comContainer.append(comment);
+	        }    
+	    });
+        return false;
+    }
+   
+   
     
    // 提交动态
     function submitStatus() {
@@ -461,7 +501,9 @@
     //ReferenceError: $ is not defined 也是够坑爹的错误..
     $(".comment").click(comment);
    $(".submitComment").click(ajaxSubmit);
+   $(".submitComment2").click(ajaxSubmit2);
    $("#submitStatus").click(submitStatus);
+   
 
 	
 	

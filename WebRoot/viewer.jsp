@@ -3,7 +3,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
   <head>
-    <title>My JSP 'takeMsg_success.jsp' starting page</title>
+    <title>待完善...</title>
 
 	<meta http-equiv="pragma" content="no-cache">
 	<meta http-equiv="cache-control" content="no-cache">
@@ -17,6 +17,6 @@
   </head>
   
   <body>
-    成功添加留言 .... <a  href="takeMsg.jsp">返回</a>
+    <img src="img/a.jpg" width="400", height="400">
   </body>
 </html>
