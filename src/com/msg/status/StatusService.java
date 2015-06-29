@@ -13,7 +13,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import com.data.generator.Time;
 import com.msg.comment.Comment;
 import com.msg.comment.CommentService;
 import com.msg.notification.NoticeService;
@@ -28,8 +27,8 @@ public class StatusService {
 	public static void main(String[] args) {
 		User user = new User();
 		user.setId(1);
-		Time[] ts = Time.values();
-		user.setLateOnline(ts[0].DATE1.date);
+//		Time[] ts = Time.values();
+//		user.setLateOnline(ts[0].DATE1.date);
 //		String sql = "select status.id,status.user_id,status.content,status.praises,status.views,status.create_time from status join status_notice on "
 //				+ "status.id = status_notice.notice_id where status_notice.user_id="
 //				+user.getId()+" and status.create_time > '" + user.getLateOnline() + "' order by status.create_time desc limit 0 , 5";
